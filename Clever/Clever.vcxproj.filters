@@ -1,36 +1,63 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Clever">
+      <UniqueIdentifier>{066304AC-F204-2F82-DBBF-42D6C700B6D2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Clever\Events">
+      <UniqueIdentifier>{2AACD749-966C-5380-5FA7-9CFDCB26985C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\Windows">
+      <UniqueIdentifier>{64FBD71A-50F4-F66C-7926-DCF1657ED678}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Clever\Core.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="src\Clever.h" />
     <ClInclude Include="src\Clever\Application.h">
-      <Filter>Header Files</Filter>
+      <Filter>Clever</Filter>
     </ClInclude>
-    <ClInclude Include="src\Clever.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\Clever\Core.h">
+      <Filter>Clever</Filter>
     </ClInclude>
     <ClInclude Include="src\Clever\EntryPoint.h">
-      <Filter>Header Files</Filter>
+      <Filter>Clever</Filter>
     </ClInclude>
+    <ClInclude Include="src\Clever\Events\ApplicationEvent.h">
+      <Filter>Clever\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Clever\Events\Event.h">
+      <Filter>Clever\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Clever\Events\KeyEvent.h">
+      <Filter>Clever\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Clever\Events\MouseEvent.h">
+      <Filter>Clever\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Clever\Log.h">
+      <Filter>Clever</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Clever\Window.h">
+      <Filter>Clever</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
+      <Filter>Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cvpch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Clever\Application.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Clever</Filter>
     </ClCompile>
+    <ClCompile Include="src\Clever\Log.cpp">
+      <Filter>Clever</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
+      <Filter>Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cvpch.cpp" />
   </ItemGroup>
 </Project>

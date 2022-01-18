@@ -1,0 +1,9 @@
+[submodule "Clever/vendor/spdlog"]
+	path = Clever/vendor/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "Clever/vendor/GLFW"]
+	path = Clever/vendor/GLFW
+	url = https://github.com/TheCherno/glfw
+[submodule "Clever/vendor/GLFW2"]
+	path = Clever/vendor/GLFW2
+	url = https://github.com/glfw/glfw
