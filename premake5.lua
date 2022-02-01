@@ -1,6 +1,8 @@
 workspace "Clever"
 	architecture "x64"
-
+	startproject "Sandbox"
+	
+	
 	configurations
 	{
 		"Debug",
@@ -14,14 +16,21 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
 IncludeDir["GLFW"] = "Clever/vendor/GLFW/include"
+IncludeDir["Glad"] = "Clever/vendor/Glad/include"
+IncludeDir["ImGui"] = "Clever/vendor/imgui"
+IncludeDir["glm"] = "Clever/vendor/glm"
 
 include "Clever/vendor/GLFW"
+include "Clever/vendor/Glad"
+include "Clever/vendor/imgui"
 
 project "Clever"
 	location "Clever"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
-
+	cppdialect "C++17"
+	staticruntime "on"
+	
 	targetdir ("bin/".. outputdir .. "/%{prj.name}")
 	objdir ("bin-intermediate/".. outputdir .. "/%{prj.name}")
 
@@ -31,49 +40,58 @@ project "Clever"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl"
 	}
 
 	includedirs
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}"
+	}
+
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS"
 	}
 
 	links
 	{
 		"GLFW",
+		"Glad",
+		"ImGui",
 		"opengl32.lib"
 	}
 	filter "system:windows"
-		cppdialect "c++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
 		{
 			"CV_PLATFORM_WINDOWS",
 			"CV_BUILD_DLL",
-			"CV_ENABLE_ASSERTS";
-		}
-		
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
+			"CV_ENABLE_ASSERTS",
+			"GLFW_INCLUDE_NONE"
 		}
 
 	filter "configurations:Debug"
 		defines "CV_DEBUG"
-		symbols "On"
+		runtime "Debug"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "CV_RELEASE"
-		optimize "On"
+		runtime "Release"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "CV_DIST"
-		optimize "On"
+		runtime "Release"
+		optimize "on"
 
 
 
@@ -81,7 +99,9 @@ project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-
+	cppdialect "c++17"
+	staticruntime "on"
+	
 	targetdir ("bin/".. outputdir .. "/%{prj.name}")
 	objdir ("bin-intermediate/".. outputdir .. "/%{prj.name}")
 
@@ -94,7 +114,9 @@ project "Sandbox"
 	includedirs
 	{
 		"Clever/vendor/spdlog/include",
-		"Clever/src"
+		"Clever/src",
+		"Clever/vendor",
+		"%{IncludeDir.glm}"
 	}
 
 	links
@@ -103,8 +125,6 @@ project "Sandbox"
 	}
 
 	filter "system:windows"
-		cppdialect "c++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
@@ -114,12 +134,15 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "CV_DEBUG"
-		symbols "On"
+		runtime "Debug"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "CV_RELEASE"
-		optimize "On"
+		runtime "Release"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "CV_DIST"
-		optimize "On"
+		runtime "Release"
+		optimize "on"

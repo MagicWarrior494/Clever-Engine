@@ -7,3 +7,9 @@
 [submodule "Clever/vendor/GLFW2"]
 	path = Clever/vendor/GLFW2
 	url = https://github.com/glfw/glfw
+[submodule "Clever/vendor/imgui"]
+	path = Clever/vendor/imgui
+	url = https://github.com/TheCherno/imgui
+[submodule "Clever/vendor/glm"]
+	path = Clever/vendor/glm
+	url = https://github.com/g-truc/glm
