@@ -9,8 +9,9 @@
 #include "Clever/ImGui/ImGuiLayer.h"
 
 #include "Clever/Renderer/Shader.h"
-
 #include "Clever/Renderer/Buffer.h"
+#include "Clever/Renderer/VertexArray.h"
+#include "Clever/Renderer/OrthographicCamera.h"
 
 namespace Clever {
 	
@@ -38,10 +39,6 @@ namespace Clever {
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 
-		unsigned int m_VertexArray;
-		std::unique_ptr<Shader> m_Shader;
-		std::unique_ptr<VertexBuffer> m_VertexBuffer;
-		std::unique_ptr<IndexBuffer> m_IndexBuffer;
 	private:
 		static Application* s_Instance;
 	};
