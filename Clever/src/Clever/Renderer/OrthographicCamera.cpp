@@ -9,11 +9,6 @@ namespace Clever {
 	{
 		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
 	}
-	/*OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top)
-		: m_ProjectionMatrix(glm::perspective(65.0f, 1280.0f / 720.0f, 1.0f, 150.0f)), m_ViewMatrix(1.0f)
-	{
-		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
-	}*/
 	void OrthographicCamera::RecaluclateViewMatrix()
 	{
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_Position) * 

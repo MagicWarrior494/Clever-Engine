@@ -33,6 +33,7 @@ namespace Clever {
 		struct WindowData {
 			std::string Title;
 			unsigned int Width, Height;
+			bool focused;
 			bool VSync;
 			
 			EventCallbackFn EventCallback;

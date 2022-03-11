@@ -14,7 +14,8 @@ namespace Clever
 		inline static std::pair<float, float> GetMousePosition() { return s_Instance->GetMousePositionImpl(); }
 		inline static float GetMouseX() { return s_Instance->getMouseXImpl(); }
 		inline static float GetMouseY() { return s_Instance->getMouseYImpl(); }
-
+		inline static void SetMousePos(float x, float y) { s_Instance->SetMousePosition(x, y); }
+		inline static void LockMouse(bool enabled) { s_Instance->HideMouse(enabled); }
 	protected:
 		virtual bool IsKeyPressedImpl(int keycode) = 0;
 
@@ -22,7 +23,8 @@ namespace Clever
 		virtual bool IsMouseButtonPressedImpl(int button) = 0;
 		virtual float getMouseXImpl() = 0;
 		virtual float getMouseYImpl() = 0;
-
+		virtual void SetMousePosition(float x, float y) = 0;
+		virtual void HideMouse(bool enabled) = 0;
 	private:
 		static Input* s_Instance;
 	};

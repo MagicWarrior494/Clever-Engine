@@ -61,4 +61,22 @@ namespace Clever
 		EVENT_CLASS_TYPE(AppRender)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
+
+	class CLEVER_API WindowFocusEvent : public Event
+	{
+	public:
+		WindowFocusEvent() {}
+
+		EVENT_CLASS_TYPE(WindowFocus)
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	};
+
+	class CLEVER_API WindowLostFocusEvent : public Event
+	{
+	public:
+		WindowLostFocusEvent() {}
+
+		EVENT_CLASS_TYPE(WindowLostFocus)
+		EVENT_CLASS_CATEGORY(EventCategoryApplication)
+	};
 }

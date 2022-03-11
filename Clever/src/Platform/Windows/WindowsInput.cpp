@@ -41,5 +41,17 @@ namespace Clever
 		auto [x, y] = GetMousePositionImpl();
 		return y;
 	}
-	
+	void WindowsInput::SetMousePosition(float x, float y)
+	{
+		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		glfwSetCursorPos(window, x, y);
+	}
+	void WindowsInput::HideMouse(bool enabled)
+	{
+		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+		if (enabled)
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		else
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
 }

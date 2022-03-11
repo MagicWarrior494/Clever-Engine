@@ -68,6 +68,20 @@ namespace Clever {
 				data.EventCallback(event);
 		});
 
+		glfwSetWindowFocusCallback(m_Window, [](GLFWwindow* window, int focused)
+			{
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				data.focused = focused;
+				if(focused == GLFW_TRUE){
+					WindowFocusEvent event;
+					data.EventCallback(event);
+				}
+				else {
+					WindowLostFocusEvent event;
+					data.EventCallback(event);
+				}
+			});
+
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) 
 		{
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);

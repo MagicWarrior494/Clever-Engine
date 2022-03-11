@@ -6,6 +6,8 @@
 #include "Clever/Events/Event.h"
 #include "Clever/Events/ApplicationEvent.h"
 
+#include "Clever/Core/Timestep.h"
+
 #include "Clever/ImGui/ImGuiLayer.h"
 
 #include "Clever/Renderer/Shader.h"
@@ -34,11 +36,13 @@ namespace Clever {
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 
+	private :
+
 		std::unique_ptr<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
-
+		Timestep m_LastFrameTime;
 	private:
 		static Application* s_Instance;
 	};

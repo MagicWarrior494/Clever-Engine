@@ -15,6 +15,11 @@ namespace Clever {
 			s_RendererAPI->Clear();
 		}
 
+		inline static void SetDepthTesting(const bool depthTesting)
+		{
+			s_RendererAPI->SetDepthTesting();
+		}
+
 		inline static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray)
 		{
 			s_RendererAPI->DrawIndexed(vertexArray);

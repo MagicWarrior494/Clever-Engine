@@ -1356,6 +1356,9 @@
     <ClInclude Include="src\Clever\Renderer\RenderCommand.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="src\Clever\Renderer\OrthographicCamera.h" />
+    <ClInclude Include="src\Clever\Renderer\PerspectiveCamera.h" />
+    <ClInclude Include="src\Clever\Core\Timestep.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Clever\Application.cpp">
@@ -1396,5 +1399,7 @@
     <ClCompile Include="src\Clever\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Clever\Renderer\OrthographicCamera.cpp" />
+    <ClCompile Include="src\Clever\Renderer\PerspectiveCamera.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
   </ItemGroup>
 </Project>

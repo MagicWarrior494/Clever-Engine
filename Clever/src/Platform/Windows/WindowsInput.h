@@ -11,6 +11,9 @@ namespace Clever
 		virtual float getMouseXImpl() override;
 		virtual float getMouseYImpl() override;
 
+		virtual void SetMousePosition(float x, float y) override;
+		virtual void HideMouse(bool enabled) override;
+
 		virtual std::pair<float, float> GetMousePositionImpl() override;
 	};
 }

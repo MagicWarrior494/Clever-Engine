@@ -6,6 +6,8 @@
 #include "Clever/Layer.h"
 #include "Clever/ImGui/ImGuiLayer.h"
 
+#include "Clever/Core/Timestep.h"
+
 #include "Clever/Log.h"
 #include "Clever/MouseButtonCodes.h"
 #include "Clever/KeyCodes.h"
@@ -21,4 +23,8 @@
 #include "Clever/input.h"
 //Entry Point -------------------
 #include "Clever/EntryPoint.h"
+//-------------------------------
+
+//TEMP  -------------------------
+#include "glm/gtx/string_cast.hpp"
 //-------------------------------
