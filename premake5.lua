@@ -19,10 +19,12 @@ IncludeDir["GLFW"] = "Clever/vendor/GLFW/include"
 IncludeDir["Glad"] = "Clever/vendor/Glad/include"
 IncludeDir["ImGui"] = "Clever/vendor/imgui"
 IncludeDir["glm"] = "Clever/vendor/glm"
+IncludeDir["assimp"] = "Clever/vendor/assimp"
 
 include "Clever/vendor/GLFW"
 include "Clever/vendor/Glad"
 include "Clever/vendor/imgui"
+include "Clever/vendor/assimp"
 
 project "Clever"
 	location "Clever"
@@ -52,7 +54,8 @@ project "Clever"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.assimp}"
 	}
 
 	defines
@@ -65,6 +68,7 @@ project "Clever"
 		"GLFW",
 		"Glad",
 		"ImGui",
+		"assimp",
 		"opengl32.lib"
 	}
 	filter "system:windows"
