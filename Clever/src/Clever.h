@@ -16,6 +16,7 @@
 #include "Clever/Renderer/RenderCommand.h"
 #include "Clever/Renderer/Buffer.h"
 #include "Clever/Renderer/Shader.h"
+#include "Clever/Renderer/Texture.h"
 #include "Clever/Renderer/VertexArray.h"
 
 #include "Clever/Renderer/OrthographicCamera.h"

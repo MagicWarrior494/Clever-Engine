@@ -24,7 +24,7 @@ public:
 			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f
 		};
 
-		std::shared_ptr<Clever::VertexBuffer> vertexBuffer;
+		Clever::Ref<Clever::VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(Clever::VertexBuffer::Create(vertices, sizeof(vertices)));
 		Clever::BufferLayout layout = {
 			{ Clever::ShaderDataType::Float3, "a_Position" },
@@ -54,7 +54,7 @@ public:
 			indices[i]--;
 		}
 		/*uint32_t indices[3] = { 0,1,2 };*/
-		std::shared_ptr<Clever::IndexBuffer> indexBuffer;
+		Clever::Ref<Clever::IndexBuffer> indexBuffer;
 		indexBuffer.reset(Clever::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
@@ -84,16 +84,21 @@ public:
 			
 			in vec2 v_TexCoord;
 
-			uniform vec3 u_Color;
+			uniform sampler2D u_Texture;
 
 			void main()
 			{
-				color = vec4(v_TexCoord, 0.0, 1.0);
+				color = texture(u_Texture, v_TexCoord);
 			}
 
 		)";
 
 		m_Shader.reset(Clever::Shader::Create(vertexSrc, fragmentSrc));
+
+		m_Texture= Clever::Texture2D::Create("C:/clever/Clever/assets/textures/CheckerBoard.png");
+
+		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->Bind();
+		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);//Texture Slot
 	}
 
 	void OnUpdate(Clever::Timestep ts) override
@@ -168,7 +173,7 @@ public:
 			}
 		}
 
-
+		m_Texture->Bind();
 
 		Clever::Renderer::EndScene();
 	}
@@ -211,10 +216,12 @@ public:
 	}
 
 private:
-	std::shared_ptr<Clever::Shader> m_Shader;
-	std::shared_ptr<Clever::VertexArray> m_VertexArray;
+	Clever::Ref<Clever::Shader> m_Shader;
+	Clever::Ref<Clever::VertexArray> m_VertexArray;
 
 	Clever::PerspectiveCamera m_Camera;
+
+	Clever::Ref<Clever::Texture2D> m_Texture;
 
 	glm::vec3 m_SquarePosition;
 
