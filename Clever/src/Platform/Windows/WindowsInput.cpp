@@ -46,7 +46,7 @@ namespace Clever
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		glfwSetCursorPos(window, x, y);
 	}
-	void WindowsInput::HideMouse(bool enabled)
+	void WindowsInput::hideMouse(bool enabled)
 	{
 		auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
 		if (enabled)

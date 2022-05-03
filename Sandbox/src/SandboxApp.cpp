@@ -2,6 +2,8 @@
 
 #include "imgui/imgui.h"
 
+#include "GLFW/include/GLFW/glfw3.h"
+
 #include "Platform/OpenGL/OpenGLShader.h"
 #include <glm/gtc/type_ptr.hpp>
 
@@ -9,7 +11,7 @@ class ExampleLayer : public Clever::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(65.0f, 1280.0f, 720.0f, 0.1f, 150.0f, glm::vec3(0,0,10), glm::vec3(0, 0, -1)), m_SquarePosition(0.0f)
+		: Layer("Example"), m_Camera(65.0f, 1280.0f, 720.0f, 0.1f, 150.0f, glm::vec3(0,0,10)), m_SquarePosition(0.0f)
 	{
 		m_VertexArray.reset(Clever::VertexArray::Create());
 
@@ -95,7 +97,7 @@ public:
 
 		m_Shader.reset(Clever::Shader::Create(vertexSrc, fragmentSrc));
 
-		m_Texture= Clever::Texture2D::Create("C:/clever/Clever/assets/textures/CheckerBoard.png");
+		m_Texture= Clever::Texture2D::Create("C:/clever/Clever/assets/textures/corndog.png");
 
 		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->Bind();
 		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);//Texture Slot
@@ -106,42 +108,61 @@ public:
 
 		float time = ts;
 		if (Clever::Input::IsKeyPressed(CV_KEY_A))
-			m_Camera.Translate(glm::vec3(-1.0f, 0.0f, 0.0f) * time);
+			m_Camera.Translate(Clever::Camera_Movement::LEFT, time);
 
 		if (Clever::Input::IsKeyPressed(CV_KEY_D))
-			m_Camera.Translate(glm::vec3(1.0f, 0.0f, 0.0f) * time);
+			m_Camera.Translate(Clever::Camera_Movement::RIGHT, time);
 
 		if (Clever::Input::IsKeyPressed(CV_KEY_W))
-			m_Camera.Translate(glm::vec3(0.0f, 0.0f, 1.0f) * time);
+			m_Camera.Translate(Clever::Camera_Movement::FORWARD, time);
 
 		if (Clever::Input::IsKeyPressed(CV_KEY_S))
-			m_Camera.Translate(glm::vec3(0.0f, 0.0f, -1.0f) * time);
+			m_Camera.Translate(Clever::Camera_Movement::BACKWARD, time);
 
 		if (Clever::Input::IsKeyPressed(CV_KEY_SPACE))
-			m_Camera.Translate(glm::vec3(0.0f, 1.0f, 0.0f) * time);
+			m_Camera.Translate(Clever::Camera_Movement::UP, time);
 
 		if (Clever::Input::IsKeyPressed(CV_KEY_LEFT_SHIFT))
-			m_Camera.Translate(glm::vec3(0.0f, -1.0f, 0.0f) * time);
-
-		std::pair<float, float> currentMousePos = Clever::Input::GetMousePosition();
-
+			m_Camera.Translate(Clever::Camera_Movement::DOWN, time);
+		
 		if (Clever::Input::IsMouseButtonPressed(1) && !m_LockMouse)
+		{
 			m_LockMouse = true;
-
-		if (Clever::Input::IsKeyPressed(CV_KEY_ESCAPE))
-			m_LockMouse = false;
-
-		if (m_LockMouse) {
-			Clever::Input::SetMousePos(m_MiddleOfScreen.first, m_MiddleOfScreen.second);
-
-			float yChange = m_MiddleOfScreen.first - currentMousePos.first;
-			float xChange = m_MiddleOfScreen.second - currentMousePos.second;
-
-			Clever::Input::LockMouse(true);
-			m_Camera.Rotate(glm::vec3(xChange, yChange, 0) * time);
+			Clever::Input::HideMouse(true);
 		}
-		else {
-			Clever::Input::LockMouse(false);
+			
+		if (Clever::Input::IsKeyPressed(CV_KEY_ESCAPE))
+		{
+			m_LockMouse = false;
+			Clever::Input::HideMouse(false);
+		}
+			
+		if (m_LockMouse && Clever::Input::GetMousePosition() != m_MiddleOfScreen)
+		{
+			std::pair<float, float> currentMousePos = Clever::Input::GetMousePosition();
+
+			if (m_FirstMouse)
+			{
+				m_LastX = currentMousePos.first;
+				m_LastY = currentMousePos.second;
+				m_FirstMouse = false;
+			}
+
+			float xoffset = currentMousePos.first - m_LastX;
+			float yoffset = m_LastY - currentMousePos.second; //Reversed since y-coordinates go from bottom to top
+
+			if (currentMousePos.first < 0 || currentMousePos.first > m_MiddleOfScreen.first * 2 || currentMousePos.second < 0 || currentMousePos.second > m_MiddleOfScreen.second * 2)
+			{
+				Clever::Input::SetMousePos(m_MiddleOfScreen.first, m_MiddleOfScreen.second);
+				m_LastX = m_MiddleOfScreen.first;
+				m_LastY = m_MiddleOfScreen.second;
+			}
+			else
+			{
+				m_LastX = currentMousePos.first;
+				m_LastY = currentMousePos.second;
+			}
+			m_Camera.ProcessMouseMovement(xoffset, yoffset);
 		}
 
 		Clever::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
@@ -159,9 +180,9 @@ public:
 
 		int count = 0;
 
-		for (int z = 0; z < 4; z++) {
-			for (int y = 0; y < 4; y++) {
-				for (int x = 0; x < 4; x++) {
+		for (int z = 0; z < 5; z++) {
+			for (int y = 0; y < 5; y++) {
+				for (int x = 0; x < 5; x++) {
 
 					glm::vec3 pos(x * 2, y * 2, z * 2);
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos);
@@ -204,14 +225,16 @@ public:
 
 	void OnEvent(Clever::Event& event) override
 	{
-		CV_INFO("An EVENT HAPPENED it was: {0}", event.GetEventType());
+		//CV_INFO("An EVENT HAPPENED it was: {0}", event.GetEventType());
 		if (event.GetEventType() == Clever::EventType::WindowFocus)
 		{
 			m_LockMouse = true;
+			Clever::Input::HideMouse(true);
 		}
 		else if (event.GetEventType() == Clever::EventType::WindowLostFocus)
 		{
 			m_LockMouse = false;
+			Clever::Input::HideMouse(false);
 		}
 	}
 
@@ -230,6 +253,11 @@ private:
 	glm::vec3 m_SquareColor = { 0.2f, 0.3f, 0.8f };
 
 	bool m_LockMouse = true;
+
+private:
+	float m_LastX = 1280.0f / 2;
+	float m_LastY = 720.0f / 2;
+	bool m_FirstMouse = true;
 };
 
 class Sandbox : public Clever::Application
