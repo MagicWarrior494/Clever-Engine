@@ -11,7 +11,7 @@ class ExampleLayer : public Clever::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(65.0f, 1280.0f, 720.0f, 0.1f, 150.0f, glm::vec3(0,0,10)), m_SquarePosition(0.0f)
+		: Layer("Example"), m_Camera(65.0f, 1280.0f, 720.0f, 0.1f, 150.0f, glm::vec3(0,0,15)), m_SquarePosition(0.0f)
 	{
 		m_VertexArray.reset(Clever::VertexArray::Create());
 
@@ -35,10 +35,10 @@ public:
 		vertexBuffer->SetLayout(layout);
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 
-			
 
-		uint32_t indices[3 * 6 * 2] = 
-		{ 
+
+		uint32_t indices[3 * 6 * 2] =
+		{
 			3, 2, 1,
 			7, 6, 5,
 			6, 2, 5,
@@ -59,7 +59,6 @@ public:
 		Clever::Ref<Clever::IndexBuffer> indexBuffer;
 		indexBuffer.reset(Clever::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
-
 		std::string vertexSrc = R"(
 			#version 330 core
 			
@@ -97,7 +96,7 @@ public:
 
 		m_Shader.reset(Clever::Shader::Create(vertexSrc, fragmentSrc));
 
-		m_Texture= Clever::Texture2D::Create("C:/clever/Clever/assets/textures/corndog.png");
+		m_Texture = Clever::Texture2D::Create("C:/clever/Clever/assets/textures/corndog.png");
 
 		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->Bind();
 		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);//Texture Slot
@@ -107,6 +106,17 @@ public:
 	{
 
 		float time = ts;
+
+		timer += time;
+
+		if (timer > 0.05f) 
+		{
+			connection.sendPosition(m_Camera.GetPosition());
+			timer = 0.0f;
+		}
+
+		playerPosition = connection.GetPositons();
+
 		if (Clever::Input::IsKeyPressed(CV_KEY_A))
 			m_Camera.Translate(Clever::Camera_Movement::LEFT, time);
 
@@ -177,14 +187,13 @@ public:
 
 		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->Bind();
 		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->UploadUniformFloat3("u_Color", m_SquareColor);
-
 		int count = 0;
 
-		for (int z = 0; z < 5; z++) {
-			for (int y = 0; y < 5; y++) {
-				for (int x = 0; x < 5; x++) {
+		for (int z = 0; z < 25; z++) {
+			for (int y = 0; y < 1; y++) {
+				for (int x = 0; x < 25; x++) {
 
-					glm::vec3 pos(x * 2, y * 2, z * 2);
+					glm::vec3 pos(x, y, z);
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos);
 
 					Clever::Renderer::Submit(m_Shader, m_VertexArray, transform);
@@ -193,6 +202,12 @@ public:
 				}
 			}
 		}
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), playerPosition);
+
+		Clever::Renderer::Submit(m_Shader, m_VertexArray, transform);
+
+		
 
 		m_Texture->Bind();
 
@@ -242,6 +257,8 @@ private:
 	Clever::Ref<Clever::Shader> m_Shader;
 	Clever::Ref<Clever::VertexArray> m_VertexArray;
 
+	float timer = 0.0f;
+
 	Clever::PerspectiveCamera m_Camera;
 
 	Clever::Ref<Clever::Texture2D> m_Texture;
@@ -252,7 +269,11 @@ private:
 
 	glm::vec3 m_SquareColor = { 0.2f, 0.3f, 0.8f };
 
+	Clever::Client connection = Clever::Client("127.0.0.1", 54000);
+
 	bool m_LockMouse = true;
+
+	glm::vec3 playerPosition;
 
 private:
 	float m_LastX = 1280.0f / 2;

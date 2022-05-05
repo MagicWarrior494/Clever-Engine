@@ -22,6 +22,9 @@
     <Filter Include="src\Platform">
       <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Platform\Assimp">
+      <UniqueIdentifier>{FD512A17-69B3-0725-F220-4ED75E813EE4}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Platform\OpenGL">
       <UniqueIdentifier>{35A49437-A105-7245-2A73-B8F796D3A804}</UniqueIdentifier>
     </Filter>
@@ -1410,6 +1413,8 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\Object\GameObject.h" />
+    <ClInclude Include="src\Platform\Networking\Client.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Clever\Application.cpp">
@@ -1487,5 +1492,7 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\Object\GameObject.cpp" />
+    <ClCompile Include="src\Platform\Networking\Client.cpp" />
   </ItemGroup>
 </Project>

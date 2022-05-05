@@ -19,6 +19,9 @@
 #include "Clever/Renderer/Texture.h"
 #include "Clever/Renderer/VertexArray.h"
 
+#include "Platform/Object/GameObject.h"
+#include "Platform/Networking/Client.h"
+
 #include "Clever/Renderer/OrthographicCamera.h"
 
 #include "Clever/input.h"
