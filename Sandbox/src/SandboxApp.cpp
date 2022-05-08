@@ -11,7 +11,7 @@ class ExampleLayer : public Clever::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(65.0f, 1280.0f, 720.0f, 0.1f, 150.0f, glm::vec3(0,0,15)), m_SquarePosition(0.0f)
+		: Layer("Example"), m_Camera(65.0f, 1280.0f, 720.0f, 0.1f, 150.0f, glm::vec3(0,0,20)), m_SquarePosition(0.0f)
 	{
 
 
@@ -20,29 +20,22 @@ public:
 		//Clever::GameObject teapot("C:/clever/Clever/assets/Object/Teapot.txt");
 
 		float vertices[8 * 5] = {
-			 0.5f,  0.5f,  0.5f, 
-			 0.5f,  0.5f, -0.5f, 
-			 0.5f, -0.5,   0.5f, 
-			 0.5f, -0.5f, -0.5f, 
-			-0.5f,  0.5f, -0.5f, 
-			-0.5f,  0.5f,  0.5f, 
-			-0.5f, -0.5f, -0.5f, 
-			-0.5f, -0.5f,  0.5f
+			 0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
+			 0.5f,  0.5f, -0.5f, 0.0f, 0.0f,
+			 0.5f, -0.5,   0.5f, 1.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f, 1.0f, 0.0f,
+			-0.5f,  0.5f,  0.5f, 0.0f, 1.0f,
+			-0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f
 		};
-		/*1.0f, 1.0f,
-			0.0f, 0.0f,
-			1.0f, 0.0f,
-			0.0f, 1.0f,
-			1.0f, 0.0f,
-			0.0f, 1.0f,
-			1.0f, 1.0f,
-			0.0f, 0.0f*/
+		
 		Clever::Ref<Clever::VertexBuffer> vertexBuffer;
 		//vertexBuffer.reset(Clever::VertexBuffer::Create(teapot.getVertices(), teapot.getVerticesSize()));
 		vertexBuffer.reset(Clever::VertexBuffer::Create(vertices, sizeof(vertices)));
 		Clever::BufferLayout layout = {
-			{ Clever::ShaderDataType::Float3, "a_Position" }
-			//{ Clever::ShaderDataType::Float2, "a_TexCoord" }
+			{ Clever::ShaderDataType::Float3, "a_Position" },
+			{ Clever::ShaderDataType::Float2, "a_TexCoord" }
 		};
 		vertexBuffer->SetLayout(layout);
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
@@ -98,20 +91,21 @@ public:
 			in vec2 v_TexCoord;
 
 			uniform vec3 u_Color;
+			uniform sampler2D u_Texture;
 	
 			void main()
 			{
-				color = vec4(u_Color, 1.0);
+				color = texture(u_Texture, v_TexCoord);
 			}
 
 		)";
 
 		m_Shader.reset(Clever::Shader::Create(vertexSrc, fragmentSrc));
 
-		//m_Texture = Clever::Texture2D::Create("C:/clever/Clever/assets/textures/corndog.png");
+		m_Texture = Clever::Texture2D::Create("C:/clever/Clever/assets/textures/corndog.png");
 
-		//std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->Bind();
-		//std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);//Texture Slot
+		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->Bind();
+		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);//Texture Slot
 	}
 
 	void OnUpdate(Clever::Timestep ts) override
@@ -204,7 +198,6 @@ public:
 
 					glm::vec3 pos(x, y, z);
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos);
-
 					Clever::Renderer::Submit(m_Shader, m_VertexArray, transform);
 
 					count++;
@@ -217,7 +210,7 @@ public:
 			Clever::Renderer::Submit(m_Shader, m_VertexArray, transform);
 		}
 
-		//m_Texture->Bind();
+		m_Texture->Bind();
 
 		Clever::Renderer::EndScene();
 	}
