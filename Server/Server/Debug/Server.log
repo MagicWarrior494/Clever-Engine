@@ -1,0 +1,4 @@
+﻿  main.cpp
+C:\Projects\Server\Server\Server\src\main.cpp(8,1): warning C4326: return type of 'main' should be 'int' instead of 'void'
+C:\Projects\Server\Server\Server\src\main.cpp(77,39): warning C4018: '<': signed/unsigned mismatch
+  Server.vcxproj -> C:\Projects\Server\Server\Debug\Server.exe

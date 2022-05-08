@@ -9,6 +9,7 @@ namespace Clever {
 	public:
 
 		Client(std::string ipAddress, int port);
+		Client() {};
 		~Client();
 
 		void sendPosition(glm::vec3 position);
@@ -18,5 +19,6 @@ namespace Clever {
 		std::string m_IpAddress;
 		int m_Port;
 		SOCKET m_Sock = 0;
+		glm::vec3 m_Pos = { 5,15,5 };
 	};
 }

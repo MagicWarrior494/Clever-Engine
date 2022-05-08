@@ -13,24 +13,36 @@ public:
 	ExampleLayer()
 		: Layer("Example"), m_Camera(65.0f, 1280.0f, 720.0f, 0.1f, 150.0f, glm::vec3(0,0,15)), m_SquarePosition(0.0f)
 	{
+
+
 		m_VertexArray.reset(Clever::VertexArray::Create());
 
-		float vertices[8 * 5] = {
-			 0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
-			 0.5f,  0.5f, -0.5f, 0.0f, 0.0f,
-			 0.5f, -0.5,   0.5f, 1.0f, 0.0f,
-			 0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-			-0.5f,  0.5f, -0.5f, 1.0f, 0.0f,
-			-0.5f,  0.5f,  0.5f, 0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f
-		};
+		//Clever::GameObject teapot("C:/clever/Clever/assets/Object/Teapot.txt");
 
+		float vertices[8 * 5] = {
+			 0.5f,  0.5f,  0.5f, 
+			 0.5f,  0.5f, -0.5f, 
+			 0.5f, -0.5,   0.5f, 
+			 0.5f, -0.5f, -0.5f, 
+			-0.5f,  0.5f, -0.5f, 
+			-0.5f,  0.5f,  0.5f, 
+			-0.5f, -0.5f, -0.5f, 
+			-0.5f, -0.5f,  0.5f
+		};
+		/*1.0f, 1.0f,
+			0.0f, 0.0f,
+			1.0f, 0.0f,
+			0.0f, 1.0f,
+			1.0f, 0.0f,
+			0.0f, 1.0f,
+			1.0f, 1.0f,
+			0.0f, 0.0f*/
 		Clever::Ref<Clever::VertexBuffer> vertexBuffer;
+		//vertexBuffer.reset(Clever::VertexBuffer::Create(teapot.getVertices(), teapot.getVerticesSize()));
 		vertexBuffer.reset(Clever::VertexBuffer::Create(vertices, sizeof(vertices)));
 		Clever::BufferLayout layout = {
-			{ Clever::ShaderDataType::Float3, "a_Position" },
-			{ Clever::ShaderDataType::Float2, "a_TexCoord" }
+			{ Clever::ShaderDataType::Float3, "a_Position" }
+			//{ Clever::ShaderDataType::Float2, "a_TexCoord" }
 		};
 		vertexBuffer->SetLayout(layout);
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
@@ -55,8 +67,8 @@ public:
 		for (int i = 0; i < 3 * 6 * 2; i++) {
 			indices[i]--;
 		}
-		/*uint32_t indices[3] = { 0,1,2 };*/
 		Clever::Ref<Clever::IndexBuffer> indexBuffer;
+		//indexBuffer.reset(Clever::IndexBuffer::Create(teapot.getIndicies(), teapot.getIndiciesSize() / sizeof(uint32_t)));
 		indexBuffer.reset(Clever::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 		std::string vertexSrc = R"(
@@ -77,7 +89,7 @@ public:
 			}
 
 		)";
-
+		//uniform sampler2D u_Texture;
 		std::string fragmentSrc = R"(
 			#version 330 core
 			
@@ -85,21 +97,21 @@ public:
 			
 			in vec2 v_TexCoord;
 
-			uniform sampler2D u_Texture;
-
+			uniform vec3 u_Color;
+	
 			void main()
 			{
-				color = texture(u_Texture, v_TexCoord);
+				color = vec4(u_Color, 1.0);
 			}
 
 		)";
 
 		m_Shader.reset(Clever::Shader::Create(vertexSrc, fragmentSrc));
 
-		m_Texture = Clever::Texture2D::Create("C:/clever/Clever/assets/textures/corndog.png");
+		//m_Texture = Clever::Texture2D::Create("C:/clever/Clever/assets/textures/corndog.png");
 
-		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->Bind();
-		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);//Texture Slot
+		//std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->Bind();
+		//std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);//Texture Slot
 	}
 
 	void OnUpdate(Clever::Timestep ts) override
@@ -107,15 +119,12 @@ public:
 
 		float time = ts;
 
-		timer += time;
-
-		if (timer > 0.05f) 
+		if (Multiplayer) 
 		{
 			connection.sendPosition(m_Camera.GetPosition());
-			timer = 0.0f;
-		}
 
-		playerPosition = connection.GetPositons();
+			playerPosition = connection.GetPositons();
+		}
 
 		if (Clever::Input::IsKeyPressed(CV_KEY_A))
 			m_Camera.Translate(Clever::Camera_Movement::LEFT, time);
@@ -202,14 +211,13 @@ public:
 				}
 			}
 		}
+		if (Multiplayer)
+		{
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), playerPosition);
+			Clever::Renderer::Submit(m_Shader, m_VertexArray, transform);
+		}
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), playerPosition);
-
-		Clever::Renderer::Submit(m_Shader, m_VertexArray, transform);
-
-		
-
-		m_Texture->Bind();
+		//m_Texture->Bind();
 
 		Clever::Renderer::EndScene();
 	}
@@ -258,6 +266,9 @@ private:
 	Clever::Ref<Clever::VertexArray> m_VertexArray;
 
 	float timer = 0.0f;
+	float getTimer = -1.0f;
+
+	bool Multiplayer = true;
 
 	Clever::PerspectiveCamera m_Camera;
 
@@ -273,7 +284,7 @@ private:
 
 	bool m_LockMouse = true;
 
-	glm::vec3 playerPosition;
+	glm::vec3 playerPosition = { 5,15,5 };
 
 private:
 	float m_LastX = 1280.0f / 2;

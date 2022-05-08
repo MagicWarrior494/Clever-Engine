@@ -6,7 +6,6 @@ namespace Clever
 {
 	GameObject::GameObject(const std::string& objFilePath)
 	{
-
 		std::string line;
 		std::ifstream file(objFilePath);
 		std::string space_delimiter = " ";
@@ -25,29 +24,44 @@ namespace Clever
 					words.push_back(line.substr(0, pos));
 					line.erase(0, pos + space_delimiter.length());
 				}
+				std::stringstream s_stream(line);
 
-				if (words.at(0) == "v")
-				{
-					vertices.push_back(std::stof(words.at(1)));
-					vertices.push_back(std::stof(words.at(2)));
-					vertices.push_back(std::stof(words.at(3)));
+				while (s_stream.good()) {
+					std::string substr;
+					getline(s_stream, substr, ' '); //get first string delimited by comma
+					words.push_back(substr);
 				}
-				else if (words.at(0) == "f")
+
+				/*for (std::string s : words)
 				{
-					indicies.push_back(std::stof(words.at(1)) - 1);
-					indicies.push_back(std::stof(words.at(2)) - 1);
-					indicies.push_back(std::stof(words.at(3)) - 1);
+					CV_CORE_TRACE("words: {0}", s);
+				}*/
+				
+				if (words.size() == 4)
+				{
+					if (words.at(0) == "v")
+					{
+						vertices.push_back(std::stof(words.at(1)));
+						vertices.push_back(std::stof(words.at(2)));
+						vertices.push_back(std::stof(words.at(3)));
+					}
+					else if (words.at(0) == "f")
+					{
+						indicies.push_back(std::stof(words.at(1)) - 1);
+						indicies.push_back(std::stof(words.at(2)) - 1);
+						indicies.push_back(std::stof(words.at(3)) - 1);
+					}
 				}
 			}
 			file.close();
 		}
-
 		else
 		{
 			CV_CORE_ERROR("COULD OPEN FILE: {0}", objFilePath);
 		}
-		Vertsize = vertices.size();
-		Indsize = indicies.size();
+
+		/*CV_CORE_TRACE("vertices: {0}", vertices.size());
+		CV_CORE_TRACE("indicies: {0}", indicies.size());*/
 
 		std::copy(vertices.begin(), vertices.end(), m_Vertices);
 		std::copy(indicies.begin(), indicies.end(), m_Indicies);

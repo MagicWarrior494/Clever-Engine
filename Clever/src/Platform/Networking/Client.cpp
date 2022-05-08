@@ -61,33 +61,38 @@ namespace Clever {
 	glm::vec3 Client::GetPositons()
 	{
 		char buf[4096];
-		std::string space_delimiter = ",";
 
 		ZeroMemory(buf, 4096);
 		int bytesRecieved = recv(m_Sock, buf, 4096, 0);
 		if (bytesRecieved > 0)
 		{
-			std::string data = std::string(buf, 0, bytesRecieved);
+			std::ostringstream ss;
+			ss << buf;
 
-			std::vector<std::string> words{};
+			std::string data = ss.str();
 
-			size_t pos = 0;
-			while ((pos = data.find(space_delimiter)) != std::string::npos) {
-				words.push_back(data.substr(0, pos));
-				data.erase(0, pos + space_delimiter.length());
+			std::vector<float> positions{};
+
+			std::stringstream s_stream(data); //create string stream from the string
+			while (s_stream.good()) {
+				std::string substr;
+				getline(s_stream, substr, ','); //get first string delimited by comma
+				std::cout << substr << std::endl;
+				positions.push_back(std::stof(substr));
 			}
-			float one = std::stof(words[0]);
-			float two = std::stof(words[1]);
-			float three = std::stof(words[2]);
 
-			return glm::vec3(one, two, three);
+			if (positions.size() == 3)
+			{
+				m_Pos = { positions.at(0), positions.at(1), positions.at(2) };
+				return { positions.at(0), positions.at(1), positions.at(2) };
+			}
 		}
-		return {0,0,0};
+		return m_Pos;
 	}
 
 	void Client::sendPosition(glm::vec3 position)
 	{
-		std::string data = std::to_string(position[0]) + "," + std::to_string(position[1]) + "," + std::to_string(position[2]);
+		std::string data = std::to_string(position.x) + "," + std::to_string(position.y) + "," + std::to_string(position.z);
 		int sendResult = send(m_Sock, data.c_str(), data.size() + 1, 0);
 	}
 }
