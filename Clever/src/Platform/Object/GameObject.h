@@ -1,22 +1,52 @@
 #pragma once
-#include <string>
+#include <glm/glm.hpp>
+#include "ObjectData.h"
 
-namespace Clever
-{
+namespace Clever {
 
 	class GameObject
 	{
 	public:
-		GameObject(const std::string& objFilePath);
-		~GameObject();
-		inline float* getVertices() const { return m_Vertices; }
-		inline uint32_t* getIndicies() const { return m_Indicies; }
-		inline uint32_t getVerticesSize() const { return sizeof(m_Vertices); }
-		inline uint32_t getIndiciesSize() const { return sizeof(m_Indicies); }
+		//For testing with empty game objects
+		GameObject(glm::vec3 position);
+
+		GameObject(ObjectData& objectMesh);
+		GameObject(ObjectData& objectMesh, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale, glm::vec3 color);
+		GameObject(ObjectData& objectMesh, glm::vec3 position);
+		GameObject(ObjectData& objectMesh, glm::vec3 position, glm::vec3 scale);
+		GameObject(ObjectData& objectMesh, glm::vec3 position, glm::vec3 scale, glm::vec3 rotation);
+
+		inline Clever::Ref<Clever::VertexArray> getVertexArray() const { return m_ObjectMesh.getVertexArray(); }
+		Clever::Ref<Clever::Shader> getShader() const { return m_ObjectMesh.getShader().getShader(); }
+		inline void setColor(glm::vec3 color) { m_Color = color; }
+
+		void step(glm::vec3 acceleration, float ts)  
+		{
+			m_Velocity += (acceleration * ts);
+			m_Position += (m_Velocity * ts);
+		}
+
+		void reset(glm::vec3 dir) {
+			if (dir.x > 0)
+				m_Velocity.x = 0;
+			if (dir.y > 0)
+				m_Velocity.y = 0;
+			if (dir.z > 0)
+				m_Velocity.z = 0;
+		}
+
+		glm::vec3 m_Scale = { 1,1,1 };
+		glm::vec3 m_Position = { 0,0,0 };
+		glm::vec3 m_Rotation = { 0,0,0 };
+		glm::vec3 m_Color = { 0.2f, 0.3f, 0.8f };
+
+		glm::vec3 m_Velocity = { 0,0,0 };
+		glm::vec3 m_ColliderScale = m_Scale;
+		bool m_dymanic = false;
+
 	private:
-		uint32_t Vertsize = 3644;
-		uint32_t Indsize = 6320;
-		float* m_Vertices = new float[Vertsize];
-		uint32_t* m_Indicies = new uint32_t[Indsize];
+		ObjectData& m_ObjectMesh = ObjectData();
+		//Ref<ObjectTexture> objectTexture;
 	};
 }
+

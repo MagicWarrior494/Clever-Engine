@@ -7,7 +7,7 @@ namespace Clever {
 	class OpenGLVertexBuffer : public VertexBuffer
 	{
 	public:
-		OpenGLVertexBuffer(float* vertices, uint32_t size);
+		OpenGLVertexBuffer(std::vector<float>& vertices, uint32_t size);
 		virtual ~OpenGLVertexBuffer();
 
 		virtual void Bind() const override;
@@ -23,7 +23,7 @@ namespace Clever {
 	class OpenGLIndexBuffer : public IndexBuffer
 	{
 	public:
-		OpenGLIndexBuffer(uint32_t* indices, uint32_t size);
+		OpenGLIndexBuffer(std::vector<uint32_t> indices, uint32_t size);
 		virtual ~OpenGLIndexBuffer();
 
 		virtual void Bind() const;

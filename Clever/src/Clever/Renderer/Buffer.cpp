@@ -6,7 +6,7 @@
 
 namespace Clever {
 
-	VertexBuffer* VertexBuffer::Create(float* vertices, uint32_t size)
+	VertexBuffer* VertexBuffer::Create(std::vector<float>& vertices, uint32_t size)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -18,7 +18,7 @@ namespace Clever {
 		return nullptr;
 	}
 
-	IndexBuffer* IndexBuffer::Create(uint32_t* indices, uint32_t size) 
+	IndexBuffer* IndexBuffer::Create(std::vector<uint32_t> indices, uint32_t size)
 	{
 		switch (Renderer::GetAPI())
 		{

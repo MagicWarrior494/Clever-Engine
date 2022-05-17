@@ -1,5 +1,4 @@
 #include <Clever.h>
-
 #include "imgui/imgui.h"
 
 #include "GLFW/include/GLFW/glfw3.h"
@@ -11,171 +10,117 @@ class ExampleLayer : public Clever::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(65.0f, 1280.0f, 720.0f, 0.1f, 150.0f, glm::vec3(0,0,20)), m_SquarePosition(0.0f)
+		: Layer("Example"), m_Camera(65.0f, 1280.0f, 720.0f, 0.1f, 150.0f, glm::vec3(1,8,23)), m_SquarePosition(0.0f)
 	{
 
+		staticObject.push_back(Clever::GameObject(m_Cube, { -.5, -0.5, -.5 }, { 10, 1, 10 }));
+		dynamicObject.push_back(Clever::GameObject(m_Cube, { 0, 15, 0 }));
 
-		m_VertexArray.reset(Clever::VertexArray::Create());
+		/*dynamicObject.push_back(Clever::GameObject(m_Dragon, {0, 2, 10,}, {0,0,0}, {1,1,1}, {0.8,0.2,0.2}));
+		dynamicObject.push_back(Clever::GameObject(m_Dragon, { 10, 2, 0, },  { 0,90,0 },  { 1,1,1 }, { 0.2,0.8,0.2 }));
+		dynamicObject.push_back(Clever::GameObject(m_Dragon, { -10, 2, 0, }, { 0,180,0 }, { 1,1,1 }, { 0.2,0.2,0.8 }));
+		dynamicObject.push_back(Clever::GameObject(m_Dragon, { 0, 2, -10, }, { 0,270,0 }, { 1,1,1 }, { 0.5,0.2,0.6 }));
+*/
 
-		//Clever::GameObject teapot("C:/clever/Clever/assets/Object/Teapot.txt");
-
-		float vertices[8 * 5] = {
-			 0.5f,  0.5f,  0.5f, 1.0f, 1.0f,
-			 0.5f,  0.5f, -0.5f, 0.0f, 0.0f,
-			 0.5f, -0.5,   0.5f, 1.0f, 0.0f,
-			 0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-			-0.5f,  0.5f, -0.5f, 1.0f, 0.0f,
-			-0.5f,  0.5f,  0.5f, 0.0f, 1.0f,
-			-0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-			-0.5f, -0.5f,  0.5f, 0.0f, 0.0f
-		};
-		
-		Clever::Ref<Clever::VertexBuffer> vertexBuffer;
-		//vertexBuffer.reset(Clever::VertexBuffer::Create(teapot.getVertices(), teapot.getVerticesSize()));
-		vertexBuffer.reset(Clever::VertexBuffer::Create(vertices, sizeof(vertices)));
-		Clever::BufferLayout layout = {
-			{ Clever::ShaderDataType::Float3, "a_Position" },
-			{ Clever::ShaderDataType::Float2, "a_TexCoord" }
-		};
-		vertexBuffer->SetLayout(layout);
-		m_VertexArray->AddVertexBuffer(vertexBuffer);
-
-
-
-		uint32_t indices[3 * 6 * 2] =
+		for (int i = 0; i < 2; i++)
 		{
-			3, 2, 1,
-			7, 6, 5,
-			6, 2, 5,
-			7, 3, 8,
-			8, 1, 6,
-			4, 5, 2,
-			3, 4, 2,
-			7, 8, 6,
-			6, 1, 2,
-			7, 4, 3,
-			8, 3, 1,
-			4, 7, 5
-		};
-		for (int i = 0; i < 3 * 6 * 2; i++) {
-			indices[i]--;
+			for (int j = 0; j < 2; j++)
+			{
+				for (int k = 0; k < 2; k++)
+				{
+					lights.push_back(Clever::GameObject(m_Light, m_LightPos + glm::vec3(((j % 2) - 0.5) * 50, i * 20, (((k) % 2) - 0.5) * 50), { 0,0,0 }, { 0.5, 0.5, 0.5 }, m_LightColor));
+				}
+			}
 		}
-		Clever::Ref<Clever::IndexBuffer> indexBuffer;
-		//indexBuffer.reset(Clever::IndexBuffer::Create(teapot.getIndicies(), teapot.getIndiciesSize() / sizeof(uint32_t)));
-		indexBuffer.reset(Clever::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-		m_VertexArray->SetIndexBuffer(indexBuffer);
-		std::string vertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec2 a_TexCoord;
-			
-			uniform mat4 u_ViewProjection;
-			uniform mat4 u_Transform;
-			
-			out vec2 v_TexCoord;
-
-			void main()
-			{
-				v_TexCoord = a_TexCoord;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0f);
-			}
-
-		)";
-		//uniform sampler2D u_Texture;
-		std::string fragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-			
-			in vec2 v_TexCoord;
-
-			uniform vec3 u_Color;
-			uniform sampler2D u_Texture;
-	
-			void main()
-			{
-				color = texture(u_Texture, v_TexCoord);
-			}
-
-		)";
-
-		m_Shader.reset(Clever::Shader::Create(vertexSrc, fragmentSrc));
-
-		m_Texture = Clever::Texture2D::Create("C:/clever/Clever/assets/textures/corndog.png");
-
-		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->Bind();
-		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->UploadUniformInt("u_Texture", 0);//Texture Slot
 	}
 
 	void OnUpdate(Clever::Timestep ts) override
 	{
-
-		float time = ts;
-
-		if (Multiplayer) 
 		{
-			connection.sendPosition(m_Camera.GetPosition());
+			float time = ts;
 
-			playerPosition = connection.GetPositons();
-		}
+			std::vector<glm::vec3> accelerations;
+			accelerations.push_back({ 0,-4,0 });
 
-		if (Clever::Input::IsKeyPressed(CV_KEY_A))
-			m_Camera.Translate(Clever::Camera_Movement::LEFT, time);
-
-		if (Clever::Input::IsKeyPressed(CV_KEY_D))
-			m_Camera.Translate(Clever::Camera_Movement::RIGHT, time);
-
-		if (Clever::Input::IsKeyPressed(CV_KEY_W))
-			m_Camera.Translate(Clever::Camera_Movement::FORWARD, time);
-
-		if (Clever::Input::IsKeyPressed(CV_KEY_S))
-			m_Camera.Translate(Clever::Camera_Movement::BACKWARD, time);
-
-		if (Clever::Input::IsKeyPressed(CV_KEY_SPACE))
-			m_Camera.Translate(Clever::Camera_Movement::UP, time);
-
-		if (Clever::Input::IsKeyPressed(CV_KEY_LEFT_SHIFT))
-			m_Camera.Translate(Clever::Camera_Movement::DOWN, time);
-		
-		if (Clever::Input::IsMouseButtonPressed(1) && !m_LockMouse)
-		{
-			m_LockMouse = true;
-			Clever::Input::HideMouse(true);
-		}
-			
-		if (Clever::Input::IsKeyPressed(CV_KEY_ESCAPE))
-		{
-			m_LockMouse = false;
-			Clever::Input::HideMouse(false);
-		}
-			
-		if (m_LockMouse && Clever::Input::GetMousePosition() != m_MiddleOfScreen)
-		{
-			std::pair<float, float> currentMousePos = Clever::Input::GetMousePosition();
-
-			if (m_FirstMouse)
+			if (Clever::Input::IsKeyPressed(CV_KEY_A))
 			{
-				m_LastX = currentMousePos.first;
-				m_LastY = currentMousePos.second;
-				m_FirstMouse = false;
+				dynamicObject.at(0).m_Velocity.x = -4;
 			}
-
-			float xoffset = currentMousePos.first - m_LastX;
-			float yoffset = m_LastY - currentMousePos.second; //Reversed since y-coordinates go from bottom to top
-
-			if (currentMousePos.first < 0 || currentMousePos.first > m_MiddleOfScreen.first * 2 || currentMousePos.second < 0 || currentMousePos.second > m_MiddleOfScreen.second * 2)
-			{
-				Clever::Input::SetMousePos(m_MiddleOfScreen.first, m_MiddleOfScreen.second);
-				m_LastX = m_MiddleOfScreen.first;
-				m_LastY = m_MiddleOfScreen.second;
-			}
+				//m_Camera.Translate(Clever::Camera_Movement::LEFT, time);
+			else if (Clever::Input::IsKeyPressed(CV_KEY_D))
+				dynamicObject.at(0).m_Velocity.x = 4;
+				//m_Camera.Translate(Clever::Camera_Movement::RIGHT, time);
 			else
+				dynamicObject.at(0).m_Velocity.x = 0;
+
+			if (Clever::Input::IsKeyPressed(CV_KEY_W))
+				dynamicObject.at(0).m_Velocity.z = -4;
+				//m_Camera.Translate(Clever::Camera_Movement::FORWARD, time);
+			else if (Clever::Input::IsKeyPressed(CV_KEY_S))
+				dynamicObject.at(0).m_Velocity.z = 4;
+				//m_Camera.Translate(Clever::Camera_Movement::BACKWARD, time);
+			else
+				dynamicObject.at(0).m_Velocity.z = 0;
+
+
+			if (Clever::Input::IsKeyPressed(CV_KEY_SPACE))
+				dynamicObject.at(0).m_Velocity.y = 4;
+
+				//m_Camera.Translate(Clever::Camera_Movement::UP, time);
+
+			//if (Clever::Input::IsKeyPressed(CV_KEY_LEFT_SHIFT))
+				//m_Camera.Translate(Clever::Camera_Movement::DOWN, time);
+
+			if (startSim)
 			{
-				m_LastX = currentMousePos.first;
-				m_LastY = currentMousePos.second;
+				Clever::PhysicsHandler::updatePositions(dynamicObject, staticObject, accelerations, ts);
 			}
-			m_Camera.ProcessMouseMovement(xoffset, yoffset);
+				
+			if (Clever::Input::IsKeyPressed(CV_KEY_T))
+			{
+				startSim = true;
+			}
+
+			if (Clever::Input::IsMouseButtonPressed(1) && !m_LockMouse)
+			{
+				m_LockMouse = true;
+				Clever::Input::HideMouse(true);
+			}
+
+			if (Clever::Input::IsKeyPressed(CV_KEY_ESCAPE))
+			{
+				m_LockMouse = false;
+				Clever::Input::HideMouse(false);
+			}
+
+			if (m_LockMouse && Clever::Input::GetMousePosition() != m_MiddleOfScreen)
+			{
+				std::pair<float, float> currentMousePos = Clever::Input::GetMousePosition();
+
+				if (m_FirstMouse)
+				{
+					m_LastX = currentMousePos.first;
+					m_LastY = currentMousePos.second;
+					m_FirstMouse = false;
+				}
+
+				float xoffset = currentMousePos.first - m_LastX;
+				float yoffset = m_LastY - currentMousePos.second; //Reversed since y-coordinates go from bottom to top
+
+				if (currentMousePos.first < 0 || currentMousePos.first > m_MiddleOfScreen.first * 2 || currentMousePos.second < 0 || currentMousePos.second > m_MiddleOfScreen.second * 2)
+				{
+					Clever::Input::SetMousePos(m_MiddleOfScreen.first, m_MiddleOfScreen.second);
+					m_LastX = m_MiddleOfScreen.first;
+					m_LastY = m_MiddleOfScreen.second;
+				}
+				else
+				{
+					m_LastX = currentMousePos.first;
+					m_LastY = currentMousePos.second;
+				}
+				m_Camera.ProcessMouseMovement(xoffset, yoffset);
+			}
+
 		}
 
 		Clever::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
@@ -185,32 +130,66 @@ public:
 
 		Clever::Renderer::BeginScene(m_Camera);
 
-		glm::vec4 redColor(0.8, 0.2, 0.3, 1.0);
-		glm::vec4 blueColor(0.2, 0.3, 0.8, 1.0);
-
-		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->Bind();
-		std::dynamic_pointer_cast<Clever::OpenGLShader>(m_Shader)->UploadUniformFloat3("u_Color", m_SquareColor);
-		int count = 0;
-
-		for (int z = 0; z < 25; z++) {
-			for (int y = 0; y < 1; y++) {
-				for (int x = 0; x < 25; x++) {
-
-					glm::vec3 pos(x, y, z);
-					glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos);
-					Clever::Renderer::Submit(m_Shader, m_VertexArray, transform);
-
-					count++;
-				}
-			}
-		}
-		if (Multiplayer)
+		for (int i = 0; i < lights.size(); i++)
 		{
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), playerPosition);
-			Clever::Renderer::Submit(m_Shader, m_VertexArray, transform);
+			lights.at(i).setColor(m_LightColor);
 		}
 
-		m_Texture->Bind();
+		std::vector<glm::vec3> lightPositions;
+		std::vector<glm::vec3> lightColor;
+		for (int i = 0; i < lights.size(); i++)
+		{
+			lightPositions.push_back(lights.at(i).m_Position);
+			lightColor.push_back(lights.at(i).m_Color);
+		}
+
+		for (const Clever::GameObject& obj : dynamicObject)
+		{
+			Clever::Ref<Clever::Shader> shader = obj.getShader();
+			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->Bind();
+			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3("u_ObjectColor", obj.m_Color);
+			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3("u_viewPos", m_Camera.GetPosition());
+
+			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3Array("u_lightPos", lightPositions);
+			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3Array("u_lightColor", lightColor);
+
+
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), obj.m_Position);
+			transform = glm::rotate(transform, obj.m_Rotation.y, { 0, 1, 0 });
+			transform = glm::scale(transform, obj.m_Scale);
+
+			Clever::Renderer::Submit(shader, obj.getVertexArray(), transform);
+		}
+		for (const Clever::GameObject& obj : staticObject)
+		{
+			Clever::Ref<Clever::Shader> shader = obj.getShader();
+			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->Bind();
+			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3("u_ObjectColor", obj.m_Color);
+			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3("u_viewPos", m_Camera.GetPosition());
+
+			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3Array("u_lightPos", lightPositions);
+			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3Array("u_lightColor", lightColor);
+
+
+			glm::mat4 transform = glm::translate(glm::mat4(1.0f), obj.m_Position);
+			transform = glm::rotate(transform, obj.m_Rotation.y, { 0, 1, 0 });
+			transform = glm::scale(transform, obj.m_Scale);
+
+			Clever::Renderer::Submit(shader, obj.getVertexArray(), transform);
+		}
+
+		for (const Clever::GameObject& obj : lights)
+		{
+			Clever::Ref<Clever::Shader> shader = obj.getShader();
+			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->Bind();
+
+			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3("u_lightColor", obj.m_Color);
+
+			glm::mat4 transform = glm::scale(glm::mat4(1.0f), obj.m_Scale);
+			transform = glm::translate(transform, obj.m_Position);
+			Clever::Renderer::Submit(shader, obj.getVertexArray(), transform);
+		}
+		//m_Texture->Bind();
 
 		Clever::Renderer::EndScene();
 	}
@@ -226,7 +205,7 @@ public:
 		ImGui::Begin("Settings");
 		ImGui::Text("CameraPosition: %f, %f, %f", cameraPos.x, cameraPos.y, cameraPos.z);
 
-		ImGui::ColorEdit3("Box Color", glm::value_ptr(m_SquareColor));
+		ImGui::ColorEdit3("Light Color", glm::value_ptr(m_LightColor));
 
 		ImGui::Text("CameraRotation: %f, %f, %f", cameraRot.x, cameraRot.y, cameraRot.z);
 		ImGui::Text("FrameRate: %f", 1.0f/ts.GetSeconds());
@@ -255,13 +234,21 @@ public:
 	}
 
 private:
-	Clever::Ref<Clever::Shader> m_Shader;
-	Clever::Ref<Clever::VertexArray> m_VertexArray;
 
-	float timer = 0.0f;
-	float getTimer = -1.0f;
+	Clever::CompiledShader standard = Clever::CompiledShader("C:/clever/Clever/assets/Shaders/Standard.vert", "C:/clever/Clever/assets/Shaders/Standard.frag");
+	Clever::CompiledShader light = Clever::CompiledShader("C:/clever/Clever/assets/Shaders/Light.vert", "C:/clever/Clever/assets/Shaders/Light.frag");
 
-	bool Multiplayer = true;
+	Clever::ObjectData m_Dragon = Clever::ObjectData("C:/clever/Clever/assets/Object/Torus.obj", standard);
+	Clever::ObjectData m_Cube = Clever::ObjectData("C:/clever/Clever/assets/Object/Cube.obj", standard);
+	Clever::ObjectData m_Light = Clever::ObjectData("C:/clever/Clever/assets/Object/Cube.obj", light);
+
+	std::vector<Clever::GameObject> dynamicObject;
+	std::vector<Clever::GameObject> staticObject;
+	std::vector<Clever::GameObject> lights;
+
+	bool Multiplayer = false;
+
+	bool startSim = false;
 
 	Clever::PerspectiveCamera m_Camera;
 
@@ -269,20 +256,22 @@ private:
 
 	glm::vec3 m_SquarePosition;
 
-	std::pair<float, float> m_MiddleOfScreen = std::pair<float, float>(1280.0f / 2, 720.0f / 2);
-
-	glm::vec3 m_SquareColor = { 0.2f, 0.3f, 0.8f };
+	glm::vec3 m_ObjectColor = { 0.2f, 0.3f, 0.8f };
+	glm::vec3 m_LightPos = { 0,5,0 };
+	glm::vec3 m_LightColor = {1, 1, 1 };
 
 	Clever::Client connection = Clever::Client("127.0.0.1", 54000);
 
-	bool m_LockMouse = true;
-
 	glm::vec3 playerPosition = { 5,15,5 };
 
-private:
+	bool m_LockMouse = true;
+
 	float m_LastX = 1280.0f / 2;
 	float m_LastY = 720.0f / 2;
 	bool m_FirstMouse = true;
+
+	std::pair<float, float> m_MiddleOfScreen = std::pair<float, float>(1280.0f / 2, 720.0f / 2);
+
 };
 
 class Sandbox : public Clever::Application
@@ -290,7 +279,8 @@ class Sandbox : public Clever::Application
 public:
 	Sandbox()
 	{
-		PushLayer(new ExampleLayer());
+		Clever::Layer* exampleLayer = new ExampleLayer();
+		PushLayer(exampleLayer);
 	}
 
 	~Sandbox()

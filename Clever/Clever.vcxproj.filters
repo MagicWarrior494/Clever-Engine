@@ -1413,8 +1413,11 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\Object\GameObject.h" />
+    <ClInclude Include="src\Platform\Object\ObjectData.h" />
     <ClInclude Include="src\Platform\Networking\Client.h" />
+    <ClInclude Include="src\Platform\Object\GameObject.h" />
+    <ClInclude Include="src\Platform\Object\CompiledShader.h" />
+    <ClInclude Include="src\Clever\Physics\PhysicsHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Clever\Application.cpp">
@@ -1492,7 +1495,10 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\Object\GameObject.cpp" />
+    <ClCompile Include="src\Platform\Object\ObjectData.cpp" />
     <ClCompile Include="src\Platform\Networking\Client.cpp" />
+    <ClCompile Include="src\Platform\Object\GameObject.cpp" />
+    <ClCompile Include="src\Platform\Object\CompiledShader.cpp" />
+    <ClCompile Include="src\Clever\Physics\PhysicsHandler.cpp" />
   </ItemGroup>
 </Project>

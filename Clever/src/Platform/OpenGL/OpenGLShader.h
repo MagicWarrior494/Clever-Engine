@@ -24,6 +24,7 @@ namespace Clever {
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
 		void UploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 
+		void UploadUniformFloat3Array(const std::string& name, const std::vector<glm::vec3>& values);
 
 	private:
 		uint32_t m_RendererID;

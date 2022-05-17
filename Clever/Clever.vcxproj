@@ -140,8 +140,11 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Platform\Networking\Client.h" />
+    <ClInclude Include="src\Clever\Physics\PhysicsHandler.h" />
+    <ClInclude Include="src\Platform\Object\CompiledShader.h" />
     <ClInclude Include="src\Platform\Object\GameObject.h" />
+    <ClInclude Include="src\Platform\Networking\Client.h" />
+    <ClInclude Include="src\Platform\Object\ObjectData.h" />
     <ClInclude Include="src\Clever.h" />
     <ClInclude Include="src\Clever\Application.h" />
     <ClInclude Include="src\Clever\Core.h" />
@@ -596,8 +599,11 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Platform\Networking\Client.cpp" />
+    <ClCompile Include="src\Clever\Physics\PhysicsHandler.cpp" />
+    <ClCompile Include="src\Platform\Object\CompiledShader.cpp" />
     <ClCompile Include="src\Platform\Object\GameObject.cpp" />
+    <ClCompile Include="src\Platform\Networking\Client.cpp" />
+    <ClCompile Include="src\Platform\Object\ObjectData.cpp" />
     <ClCompile Include="src\Clever\Application.cpp" />
     <ClCompile Include="src\Clever\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Clever\ImGui\ImGuiLayer.cpp" />

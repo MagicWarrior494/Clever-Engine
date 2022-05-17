@@ -143,6 +143,19 @@ namespace Clever
 		glUniform3f(location, values.x, values.y, values.z);
 	}
 
+	void OpenGLShader::UploadUniformFloat3Array(const std::string& name, const std::vector<glm::vec3>& values)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+		float v[8 * 3];
+		for (int i = 0; i < values.size() * 3; i+=3)
+		{
+			v[i] = values.at((int)(i/3)).x;
+			v[i + 1] = values.at((int)(i/3)).y;
+			v[i + 2] = values.at((int)(i/3)).z;
+		}
+		glUniform3fv(location, values.size(), v);
+	}
+
 	void OpenGLShader::UploadUniformFloat2(const std::string& name, const glm::vec2& values)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
