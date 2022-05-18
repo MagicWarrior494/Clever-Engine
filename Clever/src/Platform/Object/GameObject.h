@@ -26,6 +26,11 @@ namespace Clever {
 			m_Position += (m_Velocity * ts);
 		}
 
+		void stepCustomVelocity(glm::vec3 velocity, float ts)
+		{
+			m_Position += (velocity * ts);
+		}
+
 		void reset(glm::vec3 dir) {
 			if (dir.x > 0)
 				m_Velocity.x = 0;

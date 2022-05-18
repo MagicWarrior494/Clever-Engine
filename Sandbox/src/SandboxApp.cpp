@@ -5,6 +5,8 @@
 
 #include "Platform/OpenGL/OpenGLShader.h"
 #include <glm/gtc/type_ptr.hpp>
+#include <math.h>
+#include <algorithm>
 
 class ExampleLayer : public Clever::Layer
 {
@@ -12,9 +14,21 @@ public:
 	ExampleLayer()
 		: Layer("Example"), m_Camera(65.0f, 1280.0f, 720.0f, 0.1f, 150.0f, glm::vec3(1,8,23)), m_SquarePosition(0.0f)
 	{
+		staticObject.push_back(Clever::GameObject(m_Cube, { -.5, -0.5, -.5  }, { 100, 1, 100 }));
 
-		staticObject.push_back(Clever::GameObject(m_Cube, { -.5, -0.5, -.5 }, { 10, 1, 10 }));
-		dynamicObject.push_back(Clever::GameObject(m_Cube, { 0, 15, 0 }));
+		for (int i = 0; i < 10; i++)
+		{
+			staticObject.push_back(Clever::GameObject(m_Cube, { -.5 + (i * 20), -0.5 + i, -.5 + (i * 6)}, { 10, 1, 10 }));
+		}
+
+		dynamicObject.push_back(Clever::GameObject(m_Cube, { 0, 15, 0 }, { 0,0,0 }, { 1,1,1 }, { 0.75, 0.32, 0.56 }));
+		
+		for (int i = 0; i < 64; i++)
+		{
+			staticObject.push_back(Clever::GameObject(m_Cube, { (i % 8) * 6, (i % 4) + 4, (int)(i/8) * 6 }, { 0,0,0 }, { 1,1,1 }, { 0.19, 0.69, 0.77 }));
+		}
+		
+		
 
 		/*dynamicObject.push_back(Clever::GameObject(m_Dragon, {0, 2, 10,}, {0,0,0}, {1,1,1}, {0.8,0.2,0.2}));
 		dynamicObject.push_back(Clever::GameObject(m_Dragon, { 10, 2, 0, },  { 0,90,0 },  { 1,1,1 }, { 0.2,0.8,0.2 }));
@@ -40,46 +54,59 @@ public:
 			float time = ts;
 
 			std::vector<glm::vec3> accelerations;
-			accelerations.push_back({ 0,-4,0 });
+			accelerations.push_back({ 0,-9.8,0 });
+
+			glm::vec3 fVector = { 0,0,-1 };
+			glm::vec3 frontVector = m_Camera.getFront();
+			frontVector.y = 0;
+
+			float fVectorMagnitude = sqrt(pow(fVector.x, 2) + pow(fVector.y, 2) + pow(fVector.z, 2));
+			float frontMagnitude = sqrt(pow(frontVector.x, 2) + pow(frontVector.y, 2) + pow(frontVector.z, 2));
+			float angle = acos(glm::dot(fVector, m_Camera.getFront()) / (fVectorMagnitude * frontMagnitude));
+			if (frontVector.x > 0)
+				angle *= -1;
+
+			float velocity = 5;
+			glm::vec3 front = m_Camera.getFront();
+			front.y = 0;
+			glm::vec3 right = m_Camera.getRight();
+			glm::vec3 up = m_Camera.getWorldUp();
+
+			glm::vec3 adderVelocity = { 0,0,0 };
 
 			if (Clever::Input::IsKeyPressed(CV_KEY_A))
-			{
-				dynamicObject.at(0).m_Velocity.x = -4;
-			}
-				//m_Camera.Translate(Clever::Camera_Movement::LEFT, time);
+				adderVelocity += -(right * velocity);
+				
 			else if (Clever::Input::IsKeyPressed(CV_KEY_D))
-				dynamicObject.at(0).m_Velocity.x = 4;
-				//m_Camera.Translate(Clever::Camera_Movement::RIGHT, time);
-			else
-				dynamicObject.at(0).m_Velocity.x = 0;
+				adderVelocity += (right * velocity);
 
 			if (Clever::Input::IsKeyPressed(CV_KEY_W))
-				dynamicObject.at(0).m_Velocity.z = -4;
-				//m_Camera.Translate(Clever::Camera_Movement::FORWARD, time);
-			else if (Clever::Input::IsKeyPressed(CV_KEY_S))
-				dynamicObject.at(0).m_Velocity.z = 4;
-				//m_Camera.Translate(Clever::Camera_Movement::BACKWARD, time);
-			else
-				dynamicObject.at(0).m_Velocity.z = 0;
+				adderVelocity += (front * velocity);
 
+			else if (Clever::Input::IsKeyPressed(CV_KEY_S))
+				adderVelocity += -(front * velocity);
 
 			if (Clever::Input::IsKeyPressed(CV_KEY_SPACE))
-				dynamicObject.at(0).m_Velocity.y = 4;
+				dynamicObject.at(0).m_Velocity.y = (up * velocity).y;
 
-				//m_Camera.Translate(Clever::Camera_Movement::UP, time);
+			adderVelocity.y = dynamicObject.at(0).m_Velocity.y;
+			dynamicObject.at(0).m_Velocity = adderVelocity;
 
-			//if (Clever::Input::IsKeyPressed(CV_KEY_LEFT_SHIFT))
-				//m_Camera.Translate(Clever::Camera_Movement::DOWN, time);
+			if (Clever::Input::IsKeyPressed(CV_KEY_T))
+				startSim = true;
 
 			if (startSim)
 			{
-				Clever::PhysicsHandler::updatePositions(dynamicObject, staticObject, accelerations, ts);
+				int timestep = 2;
+				for(int i = 0; i < timestep; i++)
+					Clever::PhysicsHandler::updatePositions(dynamicObject, staticObject, accelerations, ts/ timestep);
+				
+				CV_INFO("The Front vector is: {0}, {1}, {2}..... Angle: {3}", frontVector.x, frontVector.y, frontVector.z, glm::degrees(angle));
+				m_Camera.SetPosition(dynamicObject.at(0).m_Position + glm::vec3(sin(angle) * 6,3,cos(angle) * 6));
+				dynamicObject.at(0).m_Rotation.y = angle;
 			}
 				
-			if (Clever::Input::IsKeyPressed(CV_KEY_T))
-			{
-				startSim = true;
-			}
+
 
 			if (Clever::Input::IsMouseButtonPressed(1) && !m_LockMouse)
 			{

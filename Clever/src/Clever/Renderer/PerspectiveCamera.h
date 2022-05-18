@@ -32,6 +32,13 @@ namespace Clever {
 
 		void updateCameraVectors();
 
+		inline glm::vec3 getFront() const { return m_Front; }
+		inline glm::vec3 getRight()const { return m_Right; }
+		inline glm::vec3 getWorldUp()const { return m_WorldUp; }
+
+		inline glm::vec3 getVelocity() const { return m_Velocity; }
+		inline void getVelocity(glm::vec3 velocity) { m_Velocity = velocity; }
+
 		const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
@@ -50,6 +57,7 @@ namespace Clever {
 		float m_Fov = 65.0f;
 
 		glm::vec3 m_Position = { 0.0f,0.0f,0.0f };
+		glm::vec3 m_Velocity = { 0,0,0 };
 		glm::vec3 m_Front = { 0.0f, 0.0f, -1.0f };
 		glm::vec3 m_Right;
 		float m_CameraSpeed = 5.0f;
