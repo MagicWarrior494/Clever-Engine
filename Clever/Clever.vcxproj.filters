@@ -16,14 +16,20 @@
     <Filter Include="src\Clever\ImGui">
       <UniqueIdentifier>{272B89B8-1324-A80A-3C56-8D8F28AE8716}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Clever\Physics">
+      <UniqueIdentifier>{AF2C3612-9B10-F767-0471-F1BAF073E1E9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Clever\Renderer">
       <UniqueIdentifier>{8394D62F-EFF5-B33D-7863-FAEFE4C3EAFC}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Platform">
       <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Platform\Assimp">
-      <UniqueIdentifier>{FD512A17-69B3-0725-F220-4ED75E813EE4}</UniqueIdentifier>
+    <Filter Include="src\Platform\Networking">
+      <UniqueIdentifier>{985C8464-0494-CCFB-0D9E-301F7954F3F4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Platform\Object">
+      <UniqueIdentifier>{87E89936-F349-7744-7CB7-BDF6E817AE03}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Platform\OpenGL">
       <UniqueIdentifier>{35A49437-A105-7245-2A73-B8F796D3A804}</UniqueIdentifier>
@@ -102,6 +108,9 @@
     <ClInclude Include="src\Clever\MouseButtonCodes.h">
       <Filter>src\Clever</Filter>
     </ClInclude>
+    <ClInclude Include="src\Clever\Physics\PhysicsHandler.h">
+      <Filter>src\Clever\Physics</Filter>
+    </ClInclude>
     <ClInclude Include="src\Clever\Renderer\Buffer.h">
       <Filter>src\Clever\Renderer</Filter>
     </ClInclude>
@@ -137,6 +146,18 @@
     </ClInclude>
     <ClInclude Include="src\Clever\input.h">
       <Filter>src\Clever</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Networking\Client.h">
+      <Filter>src\Platform\Networking</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Object\CompiledShader.h">
+      <Filter>src\Platform\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Object\GameObject.h">
+      <Filter>src\Platform\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Object\ObjectData.h">
+      <Filter>src\Platform\Object</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
@@ -1413,11 +1434,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\Object\ObjectData.h" />
-    <ClInclude Include="src\Platform\Networking\Client.h" />
-    <ClInclude Include="src\Platform\Object\GameObject.h" />
-    <ClInclude Include="src\Platform\Object\CompiledShader.h" />
-    <ClInclude Include="src\Clever\Physics\PhysicsHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Clever\Application.cpp">
@@ -1437,6 +1453,9 @@
     </ClCompile>
     <ClCompile Include="src\Clever\Log.cpp">
       <Filter>src\Clever</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Clever\Physics\PhysicsHandler.cpp">
+      <Filter>src\Clever\Physics</Filter>
     </ClCompile>
     <ClCompile Include="src\Clever\Renderer\Buffer.cpp">
       <Filter>src\Clever\Renderer</Filter>
@@ -1464,6 +1483,18 @@
     </ClCompile>
     <ClCompile Include="src\Clever\Renderer\VertexArray.cpp">
       <Filter>src\Clever\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Networking\Client.cpp">
+      <Filter>src\Platform\Networking</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Object\CompiledShader.cpp">
+      <Filter>src\Platform\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Object\GameObject.cpp">
+      <Filter>src\Platform\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Object\ObjectData.cpp">
+      <Filter>src\Platform\Object</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
@@ -1495,10 +1526,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\Object\ObjectData.cpp" />
-    <ClCompile Include="src\Platform\Networking\Client.cpp" />
-    <ClCompile Include="src\Platform\Object\GameObject.cpp" />
-    <ClCompile Include="src\Platform\Object\CompiledShader.cpp" />
-    <ClCompile Include="src\Clever\Physics\PhysicsHandler.cpp" />
   </ItemGroup>
 </Project>
