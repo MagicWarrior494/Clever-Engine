@@ -20,10 +20,12 @@ IncludeDir["Glad"] = "Clever/vendor/Glad/include"
 IncludeDir["ImGui"] = "Clever/vendor/imgui"
 IncludeDir["glm"] = "Clever/vendor/glm"
 IncludeDir["stb_image"] = "Clever/vendor/stb_image"
+IncludeDir["Assimp"] = "Clever/vendor/Assimp/assimp/include"
 
 include "Clever/vendor/GLFW"
 include "Clever/vendor/Glad"
 include "Clever/vendor/imgui"
+include "Clever/vendor/Assimp/assimp"
 
 project "Clever"
 	location "Clever"
@@ -45,7 +47,9 @@ project "Clever"
 		"%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl"
+		"%{prj.name}/vendor/glm/glm/**.inl",
+		"%{prj.name}/vendor/Assimp/assimp/include/assimp/**.hpp",
+		"%{prj.name}/vendor/Assimp/assimp/include/assimp/**.h"
 	}
 
 	includedirs
@@ -56,7 +60,8 @@ project "Clever"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.Assimp}"
 	}
 
 	defines
@@ -69,7 +74,8 @@ project "Clever"
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"assimp"
 	}
 	filter "system:windows"
 		systemversion "latest"
@@ -118,6 +124,7 @@ project "Sandbox"
 	includedirs
 	{
 		"Clever/vendor/spdlog/include",
+		"%{IncludeDir.Assimp}",
 		"Clever/src",
 		"Clever/vendor",
 		"%{IncludeDir.glm}"

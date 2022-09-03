@@ -14,6 +14,7 @@
 #include "Clever/Renderer/Buffer.h"
 #include "Clever/Renderer/VertexArray.h"
 #include "Clever/Renderer/OrthographicCamera.h"
+#include "Clever/ECS/Handlers/Coordinator.h"
 
 namespace Clever {
 	
@@ -31,18 +32,18 @@ namespace Clever {
 		void PushOverlay(Layer* layer);
 
 		Window& GetWindow() { return *m_Window; }
-
 		static Application& Get() { return *s_Instance; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 
-	private :
+	private:
 
 		std::unique_ptr<Window> m_Window;
 		ImGuiLayer* m_ImGuiLayer;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 		Timestep m_LastFrameTime;
+
 	private:
 		static Application* s_Instance;
 	};

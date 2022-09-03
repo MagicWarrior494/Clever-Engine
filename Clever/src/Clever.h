@@ -20,12 +20,21 @@
 #include "Clever/Renderer/VertexArray.h"
 
 #include "Platform/Object/ObjectData.h"
-#include "Platform/Object/GameObject.h"
 #include "Platform/Object/CompiledShader.h"
 #include "Platform/Networking/Client.h"
-#include "Clever/Physics/PhysicsHandler.h"
+
+//ECS STUFF ---------------------
+#include "Clever/ECS/Handlers/Coordinator.h"
+#include "Clever/ECS/Components/Components.h"
+#include "Clever/ECS/Systems/RenderingSystem.h"
+#include "Clever/ECS/Systems/ColorController.h"
+#include "Clever/ECS/Systems/PlatformPhysicsSystem.h"
+#include "Clever/ECS/Systems/TravelBetweenPointsSystem.h"
+
+//-------------------------------
 
 #include "Clever/Renderer/OrthographicCamera.h"
+
 
 #include "Clever/input.h"
 //Entry Point -------------------

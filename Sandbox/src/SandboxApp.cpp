@@ -1,248 +1,132 @@
 #include <Clever.h>
 #include "imgui/imgui.h"
+#include "PlayerManager.h"
+#include "ECSManager.h"
+
+#include <glm/gtc/type_ptr.hpp>
 
 #include "GLFW/include/GLFW/glfw3.h"
+
+#include "Clever/ECS/DataHandelers/RenderingData.h"
+
+#include <cstdlib>
+#include <time.h>
 
 #include "Platform/OpenGL/OpenGLShader.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <math.h>
 #include <algorithm>
 
-class ExampleLayer : public Clever::Layer
+class MainLayer : public Clever::Layer
 {
 public:
-	ExampleLayer()
-		: Layer("Example"), m_Camera(65.0f, 1280.0f, 720.0f, 0.1f, 150.0f, glm::vec3(1,8,23)), m_SquarePosition(0.0f)
+	MainLayer()
+		: Layer("Example")
 	{
-		staticObject.push_back(Clever::GameObject(m_Cube, { -.5, -0.5, -.5  }, { 100, 1, 100 }));
+		Clever::CompiledShader standard = Clever::CompiledShader("C:/clever/Clever-ECS/assets/Shaders/Standard.vert", "C:/clever/Clever-ECS/assets/Shaders/Standard.frag");
+		Clever::Ref<Clever::ObjectData> cubeData = std::make_shared<Clever::ObjectData>(Clever::ObjectData("C:/clever/Clever-ECS/assets/Object/Cube.obj", standard));
 
-		for (int i = 0; i < 10; i++)
+		int numberOfEntitiesX = 100;
+		int numberOfEntitiesZ = 100;
+
+		std::srand(time(0));
+
+		for (int x = -numberOfEntitiesX/2; x < numberOfEntitiesX/2; x++)
 		{
-			staticObject.push_back(Clever::GameObject(m_Cube, { -.5 + (i * 20), -0.5 + i, -.5 + (i * 6)}, { 10, 1, 10 }));
-		}
-
-		dynamicObject.push_back(Clever::GameObject(m_Cube, { 0, 15, 0 }, { 0,0,0 }, { 1,1,1 }, { 0.75, 0.32, 0.56 }));
-		
-		for (int i = 0; i < 64; i++)
-		{
-			staticObject.push_back(Clever::GameObject(m_Cube, { (i % 8) * 6, (i % 4) + 4, (int)(i/8) * 6 }, { 0,0,0 }, { 1,1,1 }, { 0.19, 0.69, 0.77 }));
-		}
-		
-		
-
-		/*dynamicObject.push_back(Clever::GameObject(m_Dragon, {0, 2, 10,}, {0,0,0}, {1,1,1}, {0.8,0.2,0.2}));
-		dynamicObject.push_back(Clever::GameObject(m_Dragon, { 10, 2, 0, },  { 0,90,0 },  { 1,1,1 }, { 0.2,0.8,0.2 }));
-		dynamicObject.push_back(Clever::GameObject(m_Dragon, { -10, 2, 0, }, { 0,180,0 }, { 1,1,1 }, { 0.2,0.2,0.8 }));
-		dynamicObject.push_back(Clever::GameObject(m_Dragon, { 0, 2, -10, }, { 0,270,0 }, { 1,1,1 }, { 0.5,0.2,0.6 }));
-*/
-
-		for (int i = 0; i < 2; i++)
-		{
-			for (int j = 0; j < 2; j++)
+			for (int z = -numberOfEntitiesZ/2; z < numberOfEntitiesZ/2; z++)
 			{
-				for (int k = 0; k < 2; k++)
-				{
-					lights.push_back(Clever::GameObject(m_Light, m_LightPos + glm::vec3(((j % 2) - 0.5) * 50, i * 20, (((k) % 2) - 0.5) * 50), { 0,0,0 }, { 0.5, 0.5, 0.5 }, m_LightColor));
-				}
+				Clever::EntityID entity = Clever::Coordinator::getInstance().CreateEntity();
+
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), { x * 8, 0, z * 8 });
+				transform = glm::rotate(transform, 0.0f, { 0,1,0 });
+				transform = glm::scale(transform, { 1, 1, 1 });
+
+				Clever::Coordinator::getInstance().AddRenderable
+				(
+					entity,
+					cubeData,
+					transform,
+					{float(std::rand())/float(RAND_MAX), float(std::rand()) / float(RAND_MAX), float(std::rand()) / float(RAND_MAX) },
+					Clever::RigidBodyComponent{{0,0,0}, {0, 0, 0}},
+					Clever::PointsPositionComponent
+						{
+							{ (x * 8) + (1 + (rand() % static_cast<int>(20) - 10)), (1 + (rand() % static_cast<int>(20) - 10)), (z * 8) + (1 + (rand() % static_cast<int>(20) - 10))},
+							{ (x * 8) + (1 + (rand() % static_cast<int>(20) - 10)), (1 + (rand() % static_cast<int>(20) - 10)), (z * 8) + (1 + (rand() % static_cast<int>(20) - 10))},
+							true, 10.0f 
+						}
+				);
+
+				Clever::Coordinator::getInstance().AddComponent(entity, Clever::CollisionBoxComponent{ {(x * 8) - 0.5, -0.5, (z * 8) - 0.5}, {(x * 8) + 0.5, 0.5, (z * 8) + 0.5}, 0.5f });
 			}
 		}
 	}
 
 	void OnUpdate(Clever::Timestep ts) override
 	{
-		{
-			float time = ts;
+		float time = ts;
 
-			std::vector<glm::vec3> accelerations;
-			accelerations.push_back({ 0,-9.8,0 });
+		////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////
 
-			glm::vec3 fVector = { 0,0,-1 };
-			glm::vec3 frontVector = m_Camera.getFront();
-			frontVector.y = 0;
+		playerManager.OnUpdate(ts);
 
-			float fVectorMagnitude = sqrt(pow(fVector.x, 2) + pow(fVector.y, 2) + pow(fVector.z, 2));
-			float frontMagnitude = sqrt(pow(frontVector.x, 2) + pow(frontVector.y, 2) + pow(frontVector.z, 2));
-			float angle = acos(glm::dot(fVector, m_Camera.getFront()) / (fVectorMagnitude * frontMagnitude));
-			if (frontVector.x > 0)
-				angle *= -1;
+		float renderingTimer = (glfwGetTime() * 1000);
 
-			float velocity = 5;
-			glm::vec3 front = m_Camera.getFront();
-			front.y = 0;
-			glm::vec3 right = m_Camera.getRight();
-			glm::vec3 up = m_Camera.getWorldUp();
+		////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////
 
-			glm::vec3 adderVelocity = { 0,0,0 };
+		ecsManager.OnRender(ts, playerManager.getCamera());
 
-			if (Clever::Input::IsKeyPressed(CV_KEY_A))
-				adderVelocity += -(right * velocity);
-				
-			else if (Clever::Input::IsKeyPressed(CV_KEY_D))
-				adderVelocity += (right * velocity);
+		renderingTime = (glfwGetTime() * 1000) - renderingTimer;
 
-			if (Clever::Input::IsKeyPressed(CV_KEY_W))
-				adderVelocity += (front * velocity);
+		////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////
 
-			else if (Clever::Input::IsKeyPressed(CV_KEY_S))
-				adderVelocity += -(front * velocity);
+		float physicsTimer = (glfwGetTime() * 1000);
 
-			if (Clever::Input::IsKeyPressed(CV_KEY_SPACE))
-				dynamicObject.at(0).m_Velocity.y = (up * velocity).y;
+		ecsManager.OnPhysics(ts);
 
-			adderVelocity.y = dynamicObject.at(0).m_Velocity.y;
-			dynamicObject.at(0).m_Velocity = adderVelocity;
+		physicsTime = (glfwGetTime() * 1000) - physicsTimer;
 
-			if (Clever::Input::IsKeyPressed(CV_KEY_T))
-				startSim = true;
+		////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////
 
-			if (startSim)
-			{
-				int timestep = 2;
-				for(int i = 0; i < timestep; i++)
-					Clever::PhysicsHandler::updatePositions(dynamicObject, staticObject, accelerations, ts/ timestep);
-				
-				CV_INFO("The Front vector is: {0}, {1}, {2}..... Angle: {3}", frontVector.x, frontVector.y, frontVector.z, glm::degrees(angle));
-				m_Camera.SetPosition(dynamicObject.at(0).m_Position + glm::vec3(sin(angle) * 6,3,cos(angle) * 6));
-				dynamicObject.at(0).m_Rotation.y = angle;
-			}
-				
+		float calculatingTimer = (glfwGetTime() * 1000);
 
+		//ecsManager.OnCalculation(ts, m_ObjectColor);
 
-			if (Clever::Input::IsMouseButtonPressed(1) && !m_LockMouse)
-			{
-				m_LockMouse = true;
-				Clever::Input::HideMouse(true);
-			}
+		calculatingTime = (glfwGetTime() * 1000) - calculatingTimer;
 
-			if (Clever::Input::IsKeyPressed(CV_KEY_ESCAPE))
-			{
-				m_LockMouse = false;
-				Clever::Input::HideMouse(false);
-			}
-
-			if (m_LockMouse && Clever::Input::GetMousePosition() != m_MiddleOfScreen)
-			{
-				std::pair<float, float> currentMousePos = Clever::Input::GetMousePosition();
-
-				if (m_FirstMouse)
-				{
-					m_LastX = currentMousePos.first;
-					m_LastY = currentMousePos.second;
-					m_FirstMouse = false;
-				}
-
-				float xoffset = currentMousePos.first - m_LastX;
-				float yoffset = m_LastY - currentMousePos.second; //Reversed since y-coordinates go from bottom to top
-
-				if (currentMousePos.first < 0 || currentMousePos.first > m_MiddleOfScreen.first * 2 || currentMousePos.second < 0 || currentMousePos.second > m_MiddleOfScreen.second * 2)
-				{
-					Clever::Input::SetMousePos(m_MiddleOfScreen.first, m_MiddleOfScreen.second);
-					m_LastX = m_MiddleOfScreen.first;
-					m_LastY = m_MiddleOfScreen.second;
-				}
-				else
-				{
-					m_LastX = currentMousePos.first;
-					m_LastY = currentMousePos.second;
-				}
-				m_Camera.ProcessMouseMovement(xoffset, yoffset);
-			}
-
-		}
-
-		Clever::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
-		Clever::RenderCommand::SetDepthTesting(true);
-		Clever::RenderCommand::Clear();
-		m_Camera.RecaluclateViewMatrix();
-
-		Clever::Renderer::BeginScene(m_Camera);
-
-		for (int i = 0; i < lights.size(); i++)
-		{
-			lights.at(i).setColor(m_LightColor);
-		}
-
-		std::vector<glm::vec3> lightPositions;
-		std::vector<glm::vec3> lightColor;
-		for (int i = 0; i < lights.size(); i++)
-		{
-			lightPositions.push_back(lights.at(i).m_Position);
-			lightColor.push_back(lights.at(i).m_Color);
-		}
-
-		for (const Clever::GameObject& obj : dynamicObject)
-		{
-			Clever::Ref<Clever::Shader> shader = obj.getShader();
-			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->Bind();
-			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3("u_ObjectColor", obj.m_Color);
-			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3("u_viewPos", m_Camera.GetPosition());
-
-			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3Array("u_lightPos", lightPositions);
-			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3Array("u_lightColor", lightColor);
-
-
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), obj.m_Position);
-			transform = glm::rotate(transform, obj.m_Rotation.y, { 0, 1, 0 });
-			transform = glm::scale(transform, obj.m_Scale);
-
-			Clever::Renderer::Submit(shader, obj.getVertexArray(), transform);
-		}
-		for (const Clever::GameObject& obj : staticObject)
-		{
-			Clever::Ref<Clever::Shader> shader = obj.getShader();
-			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->Bind();
-			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3("u_ObjectColor", obj.m_Color);
-			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3("u_viewPos", m_Camera.GetPosition());
-
-			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3Array("u_lightPos", lightPositions);
-			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3Array("u_lightColor", lightColor);
-
-
-			glm::mat4 transform = glm::translate(glm::mat4(1.0f), obj.m_Position);
-			transform = glm::rotate(transform, obj.m_Rotation.y, { 0, 1, 0 });
-			transform = glm::scale(transform, obj.m_Scale);
-
-			Clever::Renderer::Submit(shader, obj.getVertexArray(), transform);
-		}
-
-		for (const Clever::GameObject& obj : lights)
-		{
-			Clever::Ref<Clever::Shader> shader = obj.getShader();
-			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->Bind();
-
-			std::dynamic_pointer_cast<Clever::OpenGLShader>(shader)->UploadUniformFloat3("u_lightColor", obj.m_Color);
-
-			glm::mat4 transform = glm::scale(glm::mat4(1.0f), obj.m_Scale);
-			transform = glm::translate(transform, obj.m_Position);
-			Clever::Renderer::Submit(shader, obj.getVertexArray(), transform);
-		}
-		//m_Texture->Bind();
-
-		Clever::Renderer::EndScene();
+		////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////
 	}
-
 
 	virtual void OnImGuiRender(Clever::Timestep ts) override
 	{
-		static float sliderMovementSpeedfloat = m_Camera.GetMovementSpeed();
-		static float sliderRotationSpeedfloat = m_Camera.GetRotationSpeed();
+		Clever::PerspectiveCamera& camera = playerManager.getCamera();
+		static float sliderMovementSpeedfloat = camera.GetMovementSpeed();
+		static float sliderRotationSpeedfloat = camera.GetRotationSpeed();
 
-		glm::vec3 cameraPos = m_Camera.GetPosition();
-		glm::vec3 cameraRot = m_Camera.GetRotation();
+		glm::vec3 cameraPos = camera.GetPosition();
+		glm::vec3 cameraRot = camera.GetRotation();
 		ImGui::Begin("Settings");
 		ImGui::Text("CameraPosition: %f, %f, %f", cameraPos.x, cameraPos.y, cameraPos.z);
 
 		ImGui::ColorEdit3("Light Color", glm::value_ptr(m_LightColor));
+		ImGui::ColorEdit3("Object Color", glm::value_ptr(m_ObjectColor));
 
 		ImGui::Text("CameraRotation: %f, %f, %f", cameraRot.x, cameraRot.y, cameraRot.z);
 		ImGui::Text("FrameRate: %f", 1.0f/ts.GetSeconds());
-		ImGui::SliderFloat("Movement Speed", &sliderMovementSpeedfloat, 0.0f, 10.0f);
-		ImGui::SliderFloat("Rotation Speed", &sliderRotationSpeedfloat, 0.0f, 10.0f);
+		ImGui::Text("CalculatingTime: %f", calculatingTime);
+		ImGui::Text("RenderingTime: %f", renderingTime);
+		ImGui::Text("PhysicsTime: %f", physicsTime);
+		ImGui::SliderFloat("Movement Speed", &sliderMovementSpeedfloat, 0.0f, 100.0f);
+		ImGui::SliderFloat("LightPos: Y-pos: %f", &m_LightPos.y, -50.0f, 50.0f);
+
 		ImGui::Text("Mouse_Pos: %f, %f, %f", Clever::Input::GetMouseX(), Clever::Input::GetMouseY());
 		ImGui::End();
 
-		m_Camera.SetMovementSpeed(sliderMovementSpeedfloat);
-		m_Camera.SetRotationSpeed(sliderRotationSpeedfloat);
+		camera.SetMovementSpeed(sliderMovementSpeedfloat);
 	}
 
 	void OnEvent(Clever::Event& event) override
@@ -250,55 +134,27 @@ public:
 		//CV_INFO("An EVENT HAPPENED it was: {0}", event.GetEventType());
 		if (event.GetEventType() == Clever::EventType::WindowFocus)
 		{
-			m_LockMouse = true;
+			playerManager.setMouseLockedState(true);
 			Clever::Input::HideMouse(true);
 		}
 		else if (event.GetEventType() == Clever::EventType::WindowLostFocus)
 		{
-			m_LockMouse = false;
+			playerManager.setMouseLockedState(false);
 			Clever::Input::HideMouse(false);
 		}
 	}
 
 private:
+	PlayerManager playerManager;
+	ECSManager ecsManager;
 
-	Clever::CompiledShader standard = Clever::CompiledShader("C:/clever/Clever/assets/Shaders/Standard.vert", "C:/clever/Clever/assets/Shaders/Standard.frag");
-	Clever::CompiledShader light = Clever::CompiledShader("C:/clever/Clever/assets/Shaders/Light.vert", "C:/clever/Clever/assets/Shaders/Light.frag");
-
-	Clever::ObjectData m_Dragon = Clever::ObjectData("C:/clever/Clever/assets/Object/Torus.obj", standard);
-	Clever::ObjectData m_Cube = Clever::ObjectData("C:/clever/Clever/assets/Object/Cube.obj", standard);
-	Clever::ObjectData m_Light = Clever::ObjectData("C:/clever/Clever/assets/Object/Cube.obj", light);
-
-	std::vector<Clever::GameObject> dynamicObject;
-	std::vector<Clever::GameObject> staticObject;
-	std::vector<Clever::GameObject> lights;
-
-	bool Multiplayer = false;
-
-	bool startSim = false;
-
-	Clever::PerspectiveCamera m_Camera;
-
-	Clever::Ref<Clever::Texture2D> m_Texture;
-
-	glm::vec3 m_SquarePosition;
+	float calculatingTime = 0.0f;
+	float renderingTime = 0.0f;
+	float physicsTime = 0.0f;
 
 	glm::vec3 m_ObjectColor = { 0.2f, 0.3f, 0.8f };
-	glm::vec3 m_LightPos = { 0,5,0 };
+	glm::vec3 m_LightPos = { 0,10,0 };
 	glm::vec3 m_LightColor = {1, 1, 1 };
-
-	Clever::Client connection = Clever::Client("127.0.0.1", 54000);
-
-	glm::vec3 playerPosition = { 5,15,5 };
-
-	bool m_LockMouse = true;
-
-	float m_LastX = 1280.0f / 2;
-	float m_LastY = 720.0f / 2;
-	bool m_FirstMouse = true;
-
-	std::pair<float, float> m_MiddleOfScreen = std::pair<float, float>(1280.0f / 2, 720.0f / 2);
-
 };
 
 class Sandbox : public Clever::Application
@@ -306,7 +162,7 @@ class Sandbox : public Clever::Application
 public:
 	Sandbox()
 	{
-		Clever::Layer* exampleLayer = new ExampleLayer();
+		Clever::Layer* exampleLayer = new MainLayer();
 		PushLayer(exampleLayer);
 	}
 

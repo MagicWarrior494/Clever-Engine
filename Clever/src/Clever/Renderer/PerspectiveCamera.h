@@ -60,7 +60,7 @@ namespace Clever {
 		glm::vec3 m_Velocity = { 0,0,0 };
 		glm::vec3 m_Front = { 0.0f, 0.0f, -1.0f };
 		glm::vec3 m_Right;
-		float m_CameraSpeed = 5.0f;
+		float m_CameraSpeed = 50.0f;
 
 		float Yaw = -90.0f;
 		float Pitch = 0.0f;
@@ -68,5 +68,4 @@ namespace Clever {
 		float MouseSensitivity = 0.1f;
 		float ZOOM = 45.0f;
 	};
-
 }

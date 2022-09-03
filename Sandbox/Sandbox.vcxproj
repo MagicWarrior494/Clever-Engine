@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>CV_PLATFORM_WINDOWS;CV_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Clever\vendor\spdlog\include;..\Clever\src;..\Clever\vendor;..\Clever\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Clever\vendor\spdlog\include;..\Clever\vendor\Assimp\assimp\include;..\Clever\src;..\Clever\vendor;..\Clever\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -95,7 +95,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>CV_PLATFORM_WINDOWS;CV_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Clever\vendor\spdlog\include;..\Clever\src;..\Clever\vendor;..\Clever\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Clever\vendor\spdlog\include;..\Clever\vendor\Assimp\assimp\include;..\Clever\src;..\Clever\vendor;..\Clever\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -115,7 +115,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>CV_PLATFORM_WINDOWS;CV_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Clever\vendor\spdlog\include;..\Clever\src;..\Clever\vendor;..\Clever\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Clever\vendor\spdlog\include;..\Clever\vendor\Assimp\assimp\include;..\Clever\src;..\Clever\vendor;..\Clever\vendor\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -130,6 +130,11 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ECSManager.h" />
+    <ClInclude Include="src\ImGuiManager.h" />
+    <ClInclude Include="src\PlayerManager.h" />
+  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SandboxApp.cpp" />
   </ItemGroup>

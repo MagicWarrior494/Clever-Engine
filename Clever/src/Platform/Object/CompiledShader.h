@@ -8,6 +8,12 @@ namespace Clever {
 	public:
 		//For testing
 		CompiledShader();
+		CompiledShader(const CompiledShader& CS)
+		{
+			m_Shader = CS.m_Shader;
+			m_VertexSrc = CS.m_VertexSrc;
+			m_FragmentSrc = CS.m_FragmentSrc;
+		}
 
 		CompiledShader(std::string vertexSrc, std::string fragmentSrc);
 		~CompiledShader();

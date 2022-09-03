@@ -3,6 +3,7 @@
 #include "OrthographicCamera.h"
 #include "PerspectiveCamera.h"
 #include "Shader.h"
+#include "Platform/Object/ObjectData.h"
 
 namespace Clever {
 
@@ -13,7 +14,7 @@ namespace Clever {
 
 		static void EndScene();
 
-		static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
+		static void Submit(const Ref<Shader>& shader, Ref<ObjectData> gameObject, uint32_t size);
 		
 		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 	private:
